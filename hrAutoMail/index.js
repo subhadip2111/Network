@@ -1,22 +1,23 @@
 const express = require('express');
 const multer = require('multer');
+const { Queue } = require('bullmq');
+
 const path = require('path');
-const { connectProducer, sendMessage } = require('./kafka');
+// const { connectProducer, sendMessage } = require('./kafka');
 require('dotenv').config();
 
 const csvToJson = require('./utils/csvToJson.js');
 
 const mongoose = require('mongoose');
+const { redisClient } = require('./bullMq.js');
+const { connect } = require('http2');
 const app = express();
 const upload = multer({ dest: 'uploads/' });
 
 const PORT = process.env.PORT || 3001;
 const TOPIC = process.env.TOPIC;
 
-// Connect Kafka Producer
-connectProducer();
 
-// Upload CSV file and process
 app.post('/upload', upload.single('file'), async (req, res) => {
   try {
     const filePath = path.join(__dirname, req.file.path);
@@ -26,10 +27,14 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 
     // Push data to Kafka
     for (const record of jsonData) {
-      await sendMessage(TOPIC, record);
+
+const emailQueue=new Queue('emailQueue',{connection:redisClient});  
+
+await emailQueue.add('sendEmail',record);
+console.log('Data sent to the queue:', record);
     }
 
-   return  res.status(200).json({ message: 'File processed and data sent to Kafka.' });
+   return  res.status(200).json({ message: 'File processed and data sent to the queue.' });
   } catch (error) {
     console.error('Error processing file:', error);
    return  res.status(500).json({ error: 'Error processing file.' });
