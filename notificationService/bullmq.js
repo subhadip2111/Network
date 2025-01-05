@@ -1,33 +1,33 @@
+const { Queue } = require('bullmq');
+const dotenv = require('dotenv');
+const IORedis = require('ioredis');
 
-const {Queue, Worker} =require('bullmq')
+dotenv.config();
 
-require('dotenv').config();
-const emailQueue = new Queue('emailQueue',{
-    connection:{
-        host:process.env.REDIS_HOST,
-        port: process.env.REDIS_PORT
-    }
+// Create an ioredis client
+const redisClient = new IORedis({
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+  username: 'default',
+  password: process.env.REDIS_PASSWORD, 
+   maxRetriesPerRequest: null,
+
+
+
 });
 
 
-const workerFunction = () => {
-    const myWorker = new Worker('emailQueue', async (job) => {
-      console.log("Processing job:", job.id, job.data);
-      return job.data;
-    }, {
-      connection: {
-        host: process.env.REDIS_HOST,
-        port: process.env.REDIS_PORT,
-      },
-    });
-  
-    myWorker.on('completed', (job) => {
-      console.log(`Job ${job.id} completed`);
-    });
-  
-    myWorker.on('failed', (job, err) => {
-      console.log(`Job ${job.id} failed with error:`, err);
-    });
-  };
+(async () => {
+  try {
+    // Verify Redis connection
+    await redisClient.ping();
+    console.log('Redis client successfully connected');
+    
 
-module.exports = {emailQueue, workerFunction};
+  } catch (error) {
+    console.error('Error during queue initialization:', error);
+  }
+})();
+
+// Export email queue after initialization
+module.exports = { redisClient };
