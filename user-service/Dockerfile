@@ -1,4 +1,3 @@
-# filepath: /home/subhadip/Personal/project/user-service/Dockerfile
 # Base image
 FROM node:18.17.0-alpine
 
@@ -9,15 +8,13 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm install --production
 
-# Copy the source code
-COPY src/ ./src
+# Copy the entire application code
+COPY . .
 
 # Expose the port the service runs on
 EXPOSE 3001
-
-# Set environment variables
 
 # Command to run the app
 CMD ["node", "src/server.js"]
