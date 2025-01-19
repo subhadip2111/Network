@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  gateway-service:
+    build:
+      context: ./api-gateway
+    ports:
+      - "3000:3000" # Correct port mapping
+    environment:
+      - PORT=3000
+      - NODE_ENV=development
+      - USER_SERVICE_URL=http://localhost:3001
+      - REDIS_HOST=redis://redis:6379 # Use the service name for Redis connection
+      - REDIS_PORT=6379
+      - DOCKER_USERNAME=subhadip2111
+      - DOCKER_PASSWORD=subhadip@123
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+  user-service:
+    build:
+      context: ./user-service
+    ports:
+      - "3001:3001" # Correct port mapping
+    environment:
+      - PORT=3001
+      - NODE_ENV=development
+      - MONGO_URL=mongodb+srv://subhadipshee20010521:NYPTUChbwleex7j7@cluster0.a4nwc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      - REDIS_HOST=redis://redis:6379 # Use the service name for Redis connection
+      - REDIS_PORT=6379
+      - TWILIO_ACCOUNT_SID=AC77d489ba3070c055f42a50a2e3b6f811
+      - TWILIO_AUTH_TOKEN=32e04949a314ec0a696c6f27b60dd464
+      - TWILIO_PHONE_NUMBER=+17753709252
+      - CLOUDINARY_API_SECRET=GxS_H32-so4MzvcVI15-Z11xqM4
+      - CLOUDINARY_API_KEY=216278928761679
+      - CLOUDINARY_URL=cloudinary://216278928761679:GxS_H32-so4MzvcVI15-Z11xqM4@dwzaorg99
+      - CLOUDINARY_CLOUD_NAME=dwzaorg99
+      - accessExpirationMinutes=21600
+      - refreshExpirationDays=30
+      - resetPasswordExpirationMinutes=10
+      - verifyEmailExpirationMinutes=10
+      - secret=user-service-secret
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379" # Correct port mapping
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge 
