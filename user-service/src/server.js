@@ -64,8 +64,8 @@ const endpointsRateLimit=rateLimit({
 app.use(endpointsRateLimit)
 app.use(userRoute);
 
-app.listen(process.env.PORT,()=>{
-    logger.info(`user service running on port ${process.env.PORT}`);
+app.listen(process.env.USER_SERVICE_PORT,()=>{
+    logger.info(`user service running on port ${process.env.USER_SERVICE_PORT}`);
 })
 
 process.on('unhandledRejection',(reason,Promise)=>{
