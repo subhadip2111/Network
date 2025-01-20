@@ -66,7 +66,9 @@ app.use('/v1/userService',proxy(process.env.USER_SERVICE_URL,{
 
     }
 }))
-
+app.get('/',()=>{
+    return res.status(200).send({message:"Hello World"})
+})
 app.listen(process.env.API_GATEWAY_PORT, () => {
   logger.info(`server is running on port ${process.env.API_GATEWAY_PORT}`);
 });

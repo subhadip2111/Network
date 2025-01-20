@@ -63,7 +63,9 @@ const endpointsRateLimit=rateLimit({
 })
 app.use(endpointsRateLimit)
 app.use(userRoute);
-
+app.get('/',()=>{
+    return res.status(200).send({message:"Hello World"})
+})
 app.listen(process.env.USER_SERVICE_PORT,()=>{
     logger.info(`user service running on port ${process.env.USER_SERVICE_PORT}`);
 })
