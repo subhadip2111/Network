@@ -1,8 +1,0 @@
-{"0":"\"","1":"v","10":"s","11":"t","12":" ","13":"b","14":"e","15":" ","16":"o","17":"f","18":" ","19":"t","2":"a","20":"y","21":"p","22":"e","23":" ","24":"o","25":"b","26":"j","27":"e","28":"c","29":"t","3":"l","4":"u","5":"e","6":"\"","7":" ","8":"m","9":"u","level":"error","message":"Error in login validation","service":"user-service","timestamp":"2025-01-11T20:53:24.160Z"}
-{"0":"\"","1":"v","10":"s","11":"t","12":" ","13":"b","14":"e","15":" ","16":"o","17":"f","18":" ","19":"t","2":"a","20":"y","21":"p","22":"e","23":" ","24":"o","25":"b","26":"j","27":"e","28":"c","29":"t","3":"l","4":"u","5":"e","6":"\"","7":" ","8":"m","9":"u","level":"error","message":"Error in login validation","service":"user-service","timestamp":"2025-01-11T20:53:35.816Z"}
-{"0":"r","1":"e","2":"a","3":"s","4":"o","5":"n","level":"error","message":"unhandled rejection","service":"user-service","timestamp":"2025-01-14T16:07:38.265Z"}
-{"0":"r","1":"e","2":"a","3":"s","4":"o","5":"n","level":"error","message":"unhandled rejection","service":"user-service","timestamp":"2025-01-14T16:07:38.266Z"}
-{"0":"r","1":"e","2":"a","3":"s","4":"o","5":"n","level":"error","message":"unhandled rejection","service":"user-service","timestamp":"2025-01-14T16:19:55.790Z"}
-{"0":"r","1":"e","2":"a","3":"s","4":"o","5":"n","level":"error","message":"unhandled rejection","service":"user-service","timestamp":"2025-01-14T16:19:55.791Z"}
-{"0":"r","1":"e","2":"a","3":"s","4":"o","5":"n","level":"error","message":"unhandled rejection","service":"user-service","timestamp":"2025-01-18T17:52:47.951Z"}
-{"0":"r","1":"e","2":"a","3":"s","4":"o","5":"n","level":"error","message":"unhandled rejection","service":"user-service","timestamp":"2025-01-18T17:52:47.954Z"}
