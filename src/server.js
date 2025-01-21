@@ -27,6 +27,9 @@ mongoose.connect(process.env.MONGO_URL,{
 })
 
 const redisClient=new Redis(process.env.REDIS_HOST)
+redisClient.on('error', (err) => {
+    logger.error('Redis connection error:', err);
+});
 
 
 const reateLimiter=new RateLimiterRedis({
