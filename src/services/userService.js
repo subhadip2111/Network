@@ -3,17 +3,16 @@ const userModels = require('../Models/userModel');
 const ApiError = require('../Utils/ApiError');
 const cloudinary = require('../Utils/cloudinaryConfig');
 
-const login = async (mobile, otp) => {
-  console.log(mobile);
+const login = async (email, otp) => {
   try {
     // Check if the user exists
-    let user = await userModels.findOne({ mobile: mobile });
+    let user = await userModels.findOne({ email: email });
     if (user) {
       user.otp = otp;
       await user.save();
       return user;
     } else {
-      const newUser = await userModels.create({ mobile, otp });
+      const newUser = await userModels.create({ email, otp });
       return newUser;
     }
   } catch (err) {
@@ -30,9 +29,21 @@ const findUserByMobile = async (mobile, otp) => {
     return new ApiError(500, 'Failed to verify OTP');
   }
 };
-const otpVerify = async (mobile) => {
+
+
+const findUserByemail = async (email) => {
   try {
-    let user = await userModels.findOne({ mobile: mobile });
+    const user = await userModels.findOne({ email: email});
+    return user;
+  } catch (error) {
+    console.error('Error in finding user by email:', error.message);
+    return new ApiError(500, 'Failed to verify OTP');
+  }
+};
+
+const otpVerify = async (email) => {
+  try {
+    let user = await userModels.findOne({ email: email });
     user.otp = '';
     await user.save();
 
@@ -86,6 +97,75 @@ const findUserDetails = async (userId) => {
     throw new Error(`Error to fetch userDetails: ${error.message}`);
   }
 };
+
+
+
+async function findUsersForHiringPost(postTitle, postDescription) {
+  try {
+    const searchKeywords = [...postTitle.split(' '), ...postDescription.split(' ')];
+    const regexPattern = searchKeywords.map(keyword => `(?i)${keyword}`).join('|');
+
+    const pipeline = [
+      {
+        $match: {
+          $and: [
+            {
+              $or: [
+                { skills: { $exists: true, $not: { $size: 0 } } },
+                { jobPreferences: { $exists: true, $not: { $size: 0 } } },
+                { projects: { $exists: true, $not: { $size: 0 } } },
+              ],
+            },
+            { email: { $exists: true, $ne: '' } },
+            { activityStatus: { $ne: 'employed' } },
+          ],
+        },
+      },
+      {
+        $match: {
+          $or: [
+            { skills: { $regex: regexPattern, $options: 'i' } },
+            { jobPreferences: { $regex: regexPattern, $options: 'i' } },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          experienceMatch: {
+            $regexMatch: {
+              input: { $ifNull: ['$experience', ''] },
+              regex: regexPattern,
+              options: 'i',
+            },
+          },
+        },
+      },
+      {
+        $match: {
+          $or: [
+            { experienceMatch: true },
+            { experience: { $exists: false } },
+          ],
+        },
+      },
+      {
+        $project: {
+          email: 1,
+        },
+      },
+    ];
+
+    const userList = await userModels.aggregate(pipeline);
+
+    return userList;
+  } catch (error) {
+    console.error('Error finding users for the hiring post:', error);
+    throw new Error('Error finding users');
+  }
+}
+
+
+
 module.exports = {
   login,
   updateUserData,
@@ -94,4 +174,6 @@ module.exports = {
   otpVerify,
   logout,
   findUserDetails,
+  findUsersForHiringPost,
+  findUserByemail
 };

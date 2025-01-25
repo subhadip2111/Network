@@ -60,6 +60,26 @@ const generateToken = (userId, expires, type, secret = process.env.secret) => {
     };
   };
   
+  const generateAuthTokensForCompany= async (company) => {
+    const accessTokenExpires = moment().add(process.env.accessExpirationMinutes, 'minutes');
+    const accessToken = generateToken(company._id, accessTokenExpires, tokenTypes.ACCESS);
+  
+    const refreshTokenExpires = moment().add(process.env.refreshExpirationDays, 'days');
+    const refreshToken = generateToken(company._id, refreshTokenExpires, tokenTypes.REFRESH);
+    await saveToken(refreshToken, company._id, refreshTokenExpires, tokenTypes.REFRESH);
+  
+    return {
+      access: {
+        token: accessToken,
+        expires: accessTokenExpires.toDate(),
+      },
+      refresh: {
+        token: refreshToken,
+        expires: refreshTokenExpires.toDate(),
+      },
+    };
+  };
+  
  
   const generateResetPasswordToken = async (email) => {
     const user = await userService.getUserByEmail(email);
@@ -87,4 +107,5 @@ const generateToken = (userId, expires, type, secret = process.env.secret) => {
     generateAuthTokens,
     generateResetPasswordToken,
     generateVerifyEmailToken,
+    generateAuthTokensForCompany
   };

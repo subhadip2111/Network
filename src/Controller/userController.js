@@ -1,3 +1,4 @@
+const { sendOtpForlogin } = require('../services/emailService');
 const {
   login,
   updateUserData,
@@ -7,6 +8,7 @@ const {
   findUserByMobile,
   findUserDetails,
   logout,
+  findUserByemail,
 } = require('../services/userService');
 const ApiError = require('../Utils/ApiError');
 const ApiSuccess = require('../Utils/ApiSuccess');
@@ -31,38 +33,39 @@ const storage = multer.diskStorage({
 const loginUser = async (req, res) => {
   logger.info('loginUser api called');
   try {
-    const { mobile } = req.body;
+    const { email } = req.body;
 
-    const otp = await sendOtpToClient(mobile);
-    const user = await login(mobile, otp);
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    const user = await login(email, otp);
     if (!user) {
-      return res.status(400).json({ error: 'Invalid Mobile number or otp ' });
+      return res.status(400).json({ error: 'Invalid email  or otp ' });
     }
+    await sendOtpForlogin(email, otp);
     return res.status(200).json({
       success: true,
-      message: `Otp successFully send to this ${mobile}`,
+      message: `Otp successFully send to this email ${email}`,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+   return  res.status(500).json({ error: error.message });
   }
 };
 
 const verifyOtp = async (req, res) => {
   logger.info('verifyOtp api called');
   try {
-    const { mobile, otp } = req.body;
+    const { email, otp } = req.body;
 
-    const user = await findUserByMobile(mobile);
+    const user = await findUserByemail(email);
 
     if (!user) {
-      return res.status(400).json({ error: 'Invalid Mobile number or otp ' });
+      return res.status(400).json({ error: 'Invalid email number or otp ' });
     }
 
     if (user.otp !== otp) {
       return res.status(400).json({ error: 'Invalid otp' });
     }
 
-    let resp = await otpVerify(mobile);
+    let resp = await otpVerify(email);
     const generateToken = await generateAuthTokens(user);
     console.log(generateAuthTokens);
     return res.status(200).json({
