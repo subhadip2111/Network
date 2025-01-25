@@ -127,9 +127,14 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    jobPreferences:[ {
+      type: String,
+      default: '',
+    }],
   },
   { timestamps: true }
 );
 
 const userModels = mongoose.model('User', UserSchema);
+
 module.exports = userModels;

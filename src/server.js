@@ -6,6 +6,8 @@ require('dotenv').config();
 const userRoute=require('./Routes/userRoute');
 const cors=require('cors');
 const logger = require('./Utils/logger');
+const companyRouter = require('./Routes/company.Route');
+const hiringComoanyRouter = require('./Routes/hiring.postRoute');
 
 const app=express();
 app.use(bodyParser.json());
@@ -24,12 +26,15 @@ mongoose.connect(process.env.MONGO_URL,{
 })
 
 app.use(userRoute);
+app.use(companyRouter)
+app.use(hiringComoanyRouter)
+
 app.get('/',(req,res)=>{
     return res.status(200).send({message:"Hello World"})
 })
 app.listen(process.env.USER_SERVICE_PORT,()=>{
     logger.info(`user service running on port ${process.env.USER_SERVICE_PORT}`);
-})
+    })
 
 process.on('unhandledRejection',(reason,Promise)=>{
     logger.error('unhandled rejection',Promise,"reason",reason)
