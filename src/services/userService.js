@@ -89,7 +89,7 @@ const logout = async (refreshToken) => {
   await refreshTokenDoc.remove();
 };
 
-const findUserDetails = async (userId) => {
+const   findUserDetails = async (userId) => {
   try {
     const user = await userModels.findById(userId);
     return user;

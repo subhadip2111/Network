@@ -8,6 +8,7 @@ const cors=require('cors');
 const logger = require('./Utils/logger');
 const companyRouter = require('./Routes/company.Route');
 const hiringComoanyRouter = require('./Routes/hiring.postRoute');
+const feedRouter = require('./Routes/feedRoute');
 
 const app=express();
 app.use(bodyParser.json());
@@ -28,7 +29,7 @@ mongoose.connect(process.env.MONGO_URL,{
 app.use(userRoute);
 app.use(companyRouter)
 app.use(hiringComoanyRouter)
-
+app.use(feedRouter)
 app.get('/',(req,res)=>{
     return res.status(200).send({message:"Hello World"})
 })
