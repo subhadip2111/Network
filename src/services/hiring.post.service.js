@@ -12,9 +12,20 @@ const createHiringPost = async (hiringPostData) => {
 };
 
 // service to get all hiring posts
-const viewAllHiringPosts = async (query) => {
+const viewAllHiringPosts = async (query,companyId) => {
   try {
-    const hiringPosts = await HiringPostModel.find(query);
+    let page=query.page ||1;
+    let pageSize=query.pageSize ||10;
+    page = Math.max(1, parseInt(page, 10)); 
+    pageSize = Math.max(1, parseInt(pageSize, 10));
+
+    const skip = (page - 1) * pageSize;
+
+    const hiringPosts = await HiringPostModel.find({companyId:companyId})
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(pageSize);
+
     return hiringPosts;
   } catch (error) {
     throw new Error(`Error fetching hiring posts: ${error.message}`);

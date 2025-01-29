@@ -16,7 +16,6 @@ const ContributorSchema = new mongoose.Schema({
   },
 });
 
-// Sub-schema for projects
 const ProjectSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -54,13 +53,20 @@ const UserSchema = new mongoose.Schema(
     },
     mobile: {
       type: String,
-      required: true,
+      default: '',
       unique: true,
     },
     experience: {
       type: String,
       trim: true,
       default: '',
+    },
+
+    profileType: {
+      type: String,
+      enum: ['student', 'beginner', 'intermediate', 'experienced'],
+      required: true,
+      default: 'student',
     },
     skills: [
       {
@@ -85,6 +91,13 @@ const UserSchema = new mongoose.Schema(
       enum: ['looking for job', 'employed', 'freelancing', 'inactive'],
       default: 'looking for job',
     },
+
+    degeree: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+
     comapnyList: [
       {
         name: {
@@ -127,10 +140,12 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
-    jobPreferences:[ {
-      type: String,
-      default: '',
-    }],
+    jobPreferences: [
+      {
+        type: String,
+        default: '',
+      },
+    ],
   },
   { timestamps: true }
 );
