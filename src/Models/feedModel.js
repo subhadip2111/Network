@@ -11,7 +11,7 @@ const FeedSchema = new mongoose.Schema(
     },
     feedType: {
       type: String,
-      enum: ['article', 'idea', 'resources', 'project', 'event'],
+      enum: ['article', 'idea', 'resources', 'project','query'],
     },
     description: {
       type: String,

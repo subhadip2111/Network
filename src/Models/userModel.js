@@ -97,7 +97,8 @@ const UserSchema = new mongoose.Schema(
       trim: true,
       default: '',
     },
-
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // People following this user
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     comapnyList: [
       {
         name: {

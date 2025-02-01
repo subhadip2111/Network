@@ -167,6 +167,9 @@ const generateNewAuthTokens = async (req, res) => {
   });
 };
 
+
+
+
 module.exports = {
   loginUser,
   updateProfile,

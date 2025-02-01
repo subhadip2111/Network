@@ -9,6 +9,8 @@ const logger = require('./Utils/logger');
 const companyRouter = require('./Routes/company.Route');
 const hiringComoanyRouter = require('./Routes/hiring.postRoute');
 const feedRouter = require('./Routes/feedRoute');
+const collabratorRoute = require('./Routes/collabrator.Route');
+const feedInterestedRoute = require('./Routes/feedInterestedRoute');
 
 const app=express();
 app.use(bodyParser.json());
@@ -30,6 +32,8 @@ app.use(userRoute);
 app.use(companyRouter)
 app.use(hiringComoanyRouter)
 app.use(feedRouter)
+app.use(feedInterestedRoute)
+app.use(collabratorRoute)
 app.get('/',(req,res)=>{
     return res.status(200).send({message:"Hello World"})
 })

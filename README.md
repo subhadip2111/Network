@@ -56,3 +56,20 @@ Feel free to submit issues and pull requests.
 
 ## License
 This project is licensed under the MIT License.
+
+feed section ->done
+feed--reaction like dislike 
+save feed functionality
+
+
+
+
+project flow -->
+user of any bacakground can make any thing and share it to the world .
+any one can join and share his/her ideas and thoughts .
+just need to be focus and a creativity mind .
+
+user cames -->go to feeds--> a explore section ->where he can explore  the things that seen in our reallife application was build .
+any user can share his idea ,find similar people who are in same mentality and then work on their project ,help line ,gudience .that all features are here .
+no need to spend 4 year of college .for b.tech 
+this can change user mind as labour to self- independend founder or  living with your dremas.

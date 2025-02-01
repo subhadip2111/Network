@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const saveFeedSchema = new mongoose.Schema({
-    feedId: {  // Renamed from fedeId to feedId
+    feedId: {  
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Feed",  // Assuming Feed collection exists
+        ref: "Feeds",  
         required: true
     },
     userId: {
@@ -19,6 +19,6 @@ const saveFeedSchema = new mongoose.Schema({
 
 saveFeedSchema.index({ userId: 1, feedId: 1 }, { unique: true });
 
-const SaveFeed = mongoose.model('SaveFeed', saveFeedSchema);
+const SaveFeedModel = mongoose.model('SaveFeed', saveFeedSchema);
 
-module.exports = SaveFeed;
+module.exports = SaveFeedModel;

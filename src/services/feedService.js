@@ -1,4 +1,5 @@
 const FeedModel = require('../Models/feedModel');
+const cloudinary = require('../Utils/cloudinaryConfig');
 
 const createFeed = async (feedBody) => {
   try {
@@ -142,4 +143,24 @@ const deleteFeed = async (id) => {
   }
 };
 
-module.exports = { createFeed, getFeedById, getFeeds, updateFeed, deleteFeed };
+
+const uploadFeedImage = async (feddId, filePath) => {
+    try {
+      const result = await cloudinary.uploader.upload(filePath, {
+        folder: 'feeds_images',
+      });
+  
+      const imageUrl = result.secure_url;
+      const updateFeedImage = await FeedModel.findByIdAndUpdate(feddId, { image: imageUrl }, { new: true });
+  
+      return updateFeedImage;
+    } catch (error) {
+        console.log(error)
+
+
+      throw new Error(`Error uploading image: ${error.message}`);
+    }
+  };
+
+
+module.exports = { createFeed, getFeedById, getFeeds, updateFeed, deleteFeed,uploadFeedImage };
