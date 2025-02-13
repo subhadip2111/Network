@@ -4,6 +4,11 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
+import { EmailModule } from './email/email.module';
+import { TokensModule } from './tokens/tokens.module';
+import { QueueModule } from './queue/queue.module';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [ConfigModule.forRoot(),
@@ -24,7 +29,21 @@ import { UserModule } from './user/user.module';
         },
       },
     }),
-    UserModule
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT, 10),
+        username: process.env.REDIS_USERNAME, // Username from .env
+        password: process.env.REDIS_PASSWORD, // Password from .env
+        tls: process.env.REDIS_TLS === 'true' ? {} : undefined, // Enable TLS only if true
+      },
+    }),
+    
+    UserModule,
+    AuthModule,
+    EmailModule,
+    TokensModule,
+    QueueModule
     
 
 
