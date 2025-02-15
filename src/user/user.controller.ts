@@ -1,13 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards,Request, HttpException, HttpStatus } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+import { Controller, Get, Post, Body, Patch, Param, Delete,UploadedFile, UseInterceptors, UseGuards,Request, HttpException, HttpStatus } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/gaurds/jwt.authGaurds';
 import { ApiSuccessResponse } from 'src/utils/ApiSuccesResponse';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { CloudinaryService } from 'src/utils/cloudinary/uploads.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService,
+    private readonly cloudinaryService: CloudinaryService
+  ) {}
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -37,6 +42,15 @@ export class UserController {
   }
   console.log(id)
     return  await this.userService.update(req.user.id, updateUserDto);
+  }
+
+  // @UseGuards(JwtAuthGuard)
+  @Post('uploads')
+  @UseInterceptors(FileInterceptor('file'))
+
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    const result = await this.cloudinaryService.uploadImage(file);
+    return { url: result.secure_url };
   }
 
   @Delete(':id')
