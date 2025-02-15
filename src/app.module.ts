@@ -26,21 +26,21 @@ import { BullModule } from '@nestjs/bull';
       extra: process.env.DB_SSL === 'true' ? { ssl: { rejectUnauthorized: false } } : undefined, // SSL Config
     }),
     
-    BullModule.forRoot({
-      redis: {
-        host: process.env.REDIS_HOST,
-        port: parseInt(process.env.REDIS_PORT, 10),
-        username: process.env.REDIS_USERNAME || undefined, // Ensure it's optional
-        password: process.env.REDIS_PASSWORD || undefined, // Ensure it's optional
-        tls: process.env.REDIS_TLS === 'true' ? {} : undefined, // Enable TLS conditionally
-        maxRetriesPerRequest: 5, // Reduce retry attempts
-        retryStrategy(times) {
-          if (times >= 10) return null; // Stop retrying after 10 attempts
-          return Math.min(times * 50, 2000); // Exponential backoff
-        },
-      },
-    }),
-    
+    // BullModule.forRoot({
+    //   redis: {
+    //     host: process.env.REDIS_HOST,
+    //     port: parseInt(process.env.REDIS_PORT, 10),
+    //     username: process.env.REDIS_USERNAME || undefined, // Ensure it's optional
+    //     password: process.env.REDIS_PASSWORD || undefined, // Ensure it's optional
+    //     tls: process.env.REDIS_TLS === 'true' ? {} : undefined, // Enable TLS conditionally
+    //     maxRetriesPerRequest: 5, // Reduce retry attempts
+    //     retryStrategy(times) {
+    //       if (times >= 10) return null; // Stop retrying after 10 attempts
+    //       return Math.min(times * 50, 2000); // Exponential backoff
+    //     },
+    //   },
+    // }),
+    QueueModule,
     
     UserModule,
     AuthModule,

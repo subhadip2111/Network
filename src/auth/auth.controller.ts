@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Body,
   Controller,
@@ -19,6 +20,7 @@ import {
 import { UserService } from 'src/user/user.service';
 import { ApiSuccessResponse } from 'src/utils/ApiSuccesResponse';
 import { JwtAuthGuard } from './gaurds/jwt.authGaurds';
+import { QueueService } from 'src/queue/queue.service';
 
 @Controller('auth')
 export class AuthController {
@@ -27,6 +29,7 @@ export class AuthController {
 
     private readonly emailService: EmailService,
     private readonly tokenService: TokensService,
+    private readonly queueService:QueueService
   ) {}
 
   @Post('login')
@@ -34,7 +37,8 @@ export class AuthController {
     console.log(dto);
     const user = await this.userService.create(dto);
     // now make the email sent function to send email  with otp
-    await this.emailService.sendWelcomeEmail(user.email, user.otp);
+    //await this.emailService.sendWelcomeEmail(user.email, user.otp);
+    await this.queueService.sendEmailJob(user.email, user.otp)
     return new ApiSuccessResponse(
       HttpStatus.OK,
       true,
@@ -55,12 +59,12 @@ export class AuthController {
     }
     const verifyUser = await this.userService.verifyOtp(user);
     const { accessToken, refreshToken } =
-      await this.tokenService.generateToken(user);
+      await this.tokenService.generateToken(verifyUser);
     return new ApiSuccessResponse(
       HttpStatus.OK,
       true,
       'otp verified SuccessFully',
-      { ...user, accessToken, refreshToken },
+      { ...verifyUser, accessToken, refreshToken },
     );
   }
 
