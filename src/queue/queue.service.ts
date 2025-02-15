@@ -1,26 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { CreateQueueDto } from './dto/create-queue.dto';
-import { UpdateQueueDto } from './dto/update-queue.dto';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class QueueService {
-  create(createQueueDto: CreateQueueDto) {
-    return 'This action adds a new queue';
-  }
+  constructor(@InjectQueue('email-queue') private emailQueue: Queue) {}
 
-  findAll() {
-    return `This action returns all queue`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} queue`;
-  }
-
-  update(id: number, updateQueueDto: UpdateQueueDto) {
-    return `This action updates a #${id} queue`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} queue`;
+  async sendWelcomeEmail(email: string, name: string) {
+    await this.emailQueue.add('send-email', { email, name }, { attempts: 3 });
   }
 }

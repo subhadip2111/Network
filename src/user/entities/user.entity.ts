@@ -10,6 +10,8 @@ export class User {
 
   @Column({ unique: true })
   email: string;
+  @Column({ nullable: true })
+  age: number;
 
   @Column({nullable:true})
   password: string;
@@ -59,8 +61,8 @@ export class User {
 tokens: Token[];
 
 
-  @CreateDateColumn()
-  createdAt: Date;
+@Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }) 
+createdAt: Date;
 }
 
 

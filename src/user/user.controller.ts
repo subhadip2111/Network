@@ -29,14 +29,20 @@ export class UserController {
   return new ApiSuccessResponse(HttpStatus.OK,true,'Profile Details  Get Successfully',user)
   }
 
-
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+ async  update(@Request() req:any,@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  if(req.user.id!==id){
+    throw new HttpException('Access Denied!', HttpStatus.FORBIDDEN);
+  }
+  console.log(id)
+    return  await this.userService.update(req.user.id, updateUserDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }
+
+  
 }

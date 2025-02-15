@@ -13,31 +13,34 @@ import { BullModule } from '@nestjs/bull';
 @Module({
   imports: [ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'dpg-cul37323esus73b37k90-a.oregon-postgres.render.com',
-      port: 5432,
-      username: 'subhadip',
-      password: 'fiF2lyv3HNq49f8BUw0xMKaKSxQfYqKU',
-      database: 'networkdb',
+      type: process.env.DB_TYPE as any, // Ensure it's a valid type (e.g., 'postgres')
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT, 10),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
-      logging: true,
-      ssl: true,  // Required for Render-hosted PostgreSQL
-      extra: {
-        ssl: {
-          rejectUnauthorized: false, // For self-signed certificates
-        },
-      },
+      synchronize: process.env.DB_SYNC === 'true', // Boolean flag from .env
+      logging: process.env.DB_LOGGING === 'true', // Enable logging conditionally
+      ssl: process.env.DB_SSL === 'true', // Enable SSL conditionally
+      extra: process.env.DB_SSL === 'true' ? { ssl: { rejectUnauthorized: false } } : undefined, // SSL Config
     }),
+    
     BullModule.forRoot({
       redis: {
         host: process.env.REDIS_HOST,
         port: parseInt(process.env.REDIS_PORT, 10),
-        username: process.env.REDIS_USERNAME, // Username from .env
-        password: process.env.REDIS_PASSWORD, // Password from .env
-        tls: process.env.REDIS_TLS === 'true' ? {} : undefined, // Enable TLS only if true
+        username: process.env.REDIS_USERNAME || undefined, // Ensure it's optional
+        password: process.env.REDIS_PASSWORD || undefined, // Ensure it's optional
+        tls: process.env.REDIS_TLS === 'true' ? {} : undefined, // Enable TLS conditionally
+        maxRetriesPerRequest: 5, // Reduce retry attempts
+        retryStrategy(times) {
+          if (times >= 10) return null; // Stop retrying after 10 attempts
+          return Math.min(times * 50, 2000); // Exponential backoff
+        },
       },
     }),
+    
     
     UserModule,
     AuthModule,

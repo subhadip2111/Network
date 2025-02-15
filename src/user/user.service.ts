@@ -8,72 +8,64 @@ import { Certificate } from 'crypto';
 
 @Injectable()
 export class UserService {
-
-  constructor(@InjectRepository(User) private readonly userRepo: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private readonly userRepo: Repository<User>,
+  ) { }
   async create(createUserDto: CreateUserDto) {
-const oldUser=await this.findUserByEmail(createUserDto.email)   
-const otp = Math.floor(100000 + Math.random() * 900000);
-if(oldUser){
-  oldUser.otp = otp.toString();
-await this.userRepo.save(oldUser)
-return oldUser
-}else{
-  const user = this.userRepo.create(createUserDto);
-  user.otp = otp.toString();
-  await this.userRepo.save(user);
-  return user
-}
-
-
+    const oldUser = await this.findUserByEmail(createUserDto.email);
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    if (oldUser) {
+      oldUser.otp = otp.toString();
+      await this.userRepo.save(oldUser);
+      return oldUser;
+    } else {
+      const user = this.userRepo.create(createUserDto);
+      user.otp = otp.toString();
+      await this.userRepo.save(user);
+      return user;
+    }
   }
 
-  async findUserByEmail(email:string){
-    const user=await this.userRepo.findOne({where:{email:email}})
-    return user
+  async findUserByEmail(email: string) {
+    const user = await this.userRepo.findOne({ where: { email: email } });
+    return user;
   }
 
   findAll() {
     return `This action returns all user`;
   }
 
- async  findOne(id:number) {
-    const user=await this.userRepo.findOne({where:{id:id}})
+  async findOne(id: number) {
+    const user = await this.userRepo.findOne({ where: { id: id } });
     return user;
   }
 
-  async verifyOtp(dto: VerifyOtp) {
-    const user = await this.userRepo.findOne({ where: { email: dto.email } });
-  
-    if (!user) {
-      return new  Error('User not found');
-    }
-  
-    if (user.otp !== dto.otp) {
-      return new Error('Invalid OTP'); 
-    }
-  
-    user.otp = null;
+ async verifyOtp(user: any) {
+  user.otp = null; // Clear OTP after successful verification
+
+  await this.userRepo.save(user);
+console.log('====================================');
+console.log(user);
+console.log('====================================');
+  return user
+}
+
+
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const user = await this.getUserById(id);
+    Object.assign(user, updateUserDto);
     await this.userRepo.save(user);
-    return user
-  
-  }
-  
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+    return user;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    return await this.userRepo.findOneByOrFail({ id: id });
   }
-
 
   async getUserById(id: number): Promise<User | null> {
-    console.log('id',id)
-    const user= await this.userRepo.findOne({ where: { id } });
-    console.log('user data',user)
+    console.log('id', id);
+    const user = await this.userRepo.findOne({ where: { id } });
+    console.log('user data', user);
     return user;
   }
-  
-
 }

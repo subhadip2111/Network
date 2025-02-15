@@ -40,4 +40,11 @@ export class TokensService {
       refreshToken,
     };
   }
+
+async logOut(token:string){
+  const tokenEntity = await this.tokenRepo.findOneOrFail({where:{token:token}})
+  return tokenEntity
+
+}
+
 }
