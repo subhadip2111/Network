@@ -10,9 +10,16 @@ import { EmailModule } from './email/email.module';
 import { TokensModule } from './tokens/tokens.module';
 import { QueueModule } from './queue/queue.module';
 import { CloudinaryModule } from './utils/cloudinary/cloudinary.module';
+import {  ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { CustomThrottlerGuard } from './coustume.gaurd';
 
 @Module({
   imports: [ConfigModule.forRoot(),
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 10,
+    }]),
     TypeOrmModule.forRoot({
       type: process.env.DB_TYPE as any, // Ensure it's a valid type (e.g., 'postgres')
       host: process.env.DB_HOST,
@@ -54,6 +61,9 @@ import { CloudinaryModule } from './utils/cloudinary/cloudinary.module';
 
   ],
   controllers: [AppController],
-  providers: [AppService]
+  providers: [AppService,{
+    provide: APP_GUARD,
+    useClass: CustomThrottlerGuard, // ✅ This is the correct way
+  },]
 })
 export class AppModule {}
