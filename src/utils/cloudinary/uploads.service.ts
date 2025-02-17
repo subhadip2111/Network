@@ -19,4 +19,20 @@ export class CloudinaryService {
       ).end(file.buffer);
     });
   }
+  async uploadVideo(file: Express.Multer.File): Promise<UploadApiResponse> {
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        {
+          resource_type: 'video', 
+          folder: 'uploads/videos', 
+          public_id: file.originalname, 
+        },
+        (error, result) => {  
+          if (error) return reject(error);
+          resolve(result);
+        },
+      ).end(file.buffer);
+    });
+  }
 }
+

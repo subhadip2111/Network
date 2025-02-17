@@ -1,7 +1,16 @@
-import { Post } from "@nestjs/common";
-import { Token } from "src/tokens/entities/token.entity";
-import { UserType } from "src/utils/enum";
-import { CreateDateColumn, OneToMany, ManyToMany, Column, Entity, JoinTable, PrimaryGeneratedColumn } from "typeorm";
+
+import { Post } from 'src/post/entities/post.entity';
+import { Token } from 'src/tokens/entities/token.entity';
+import { UserType } from 'src/utils/enum';
+import {
+  CreateDateColumn,
+  OneToMany,
+  ManyToMany,
+  Column,
+  Entity,
+  JoinTable,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class User {
@@ -13,10 +22,10 @@ export class User {
   @Column({ nullable: true })
   age: number;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   password: string;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   fullName: string;
 
   @Column({ nullable: true })
@@ -25,44 +34,37 @@ export class User {
   @Column({ type: 'enum', enum: UserType, default: UserType.STUDENT })
   role: string;
 
-
   @Column({ type: 'json', default: [] })
   skills: string[];
-  
 
   @Column({ nullable: true })
   bio: string;
-  
+
   @Column({ nullable: true })
-  githubProfile:string;
+  githubProfile: string;
 
   @Column({ nullable: true })
   otp: string;
-  
 
-//   @OneToMany(() => Post, (post) => post.user)
-//   posts: Post[];
+  @OneToMany(() => Post, (post) => post.user)
+  posts: Post[];
+                         
+  //   @ManyToMany(() => Project, (project) => project.members)
+  //   projects: Project[];
 
-//   @ManyToMany(() => Project, (project) => project.members)
-//   projects: Project[];
+  //   @OneToMany(() => Comment, (comment) => comment.user)
+  //   comments: Comment[];
 
-//   @OneToMany(() => Comment, (comment) => comment.user)
-//   comments: Comment[];
+  //   @ManyToMany(() => User, (user) => user.following)
+  //   @JoinTable()
+  //   followers: User[];
 
-//   @ManyToMany(() => User, (user) => user.following)
-//   @JoinTable()
-//   followers: User[];
+  //   @ManyToMany(() => User, (user) => user.followers)
+  //   following: User[];
 
-//   @ManyToMany(() => User, (user) => user.followers)
-//   following: User[];
+  @OneToMany(() => Token, (token) => token.userId, { cascade: true }) // One User can have multiple Tokens
+  tokens: Token[];
 
-
-@OneToMany(() => Token, (token) => token.userId, { cascade: true }) // One User can have multiple Tokens
-tokens: Token[];
-
-
-@Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }) 
-createdAt: Date;
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
 }
-
-

@@ -13,12 +13,13 @@ import { CloudinaryModule } from './utils/cloudinary/cloudinary.module';
 import {  ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { CustomThrottlerGuard } from './coustume.gaurd';
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [ConfigModule.forRoot(),
     ThrottlerModule.forRoot([{
       ttl: 60000,
-      limit: 10,
+      limit: 3,
     }]),
     TypeOrmModule.forRoot({
       type: process.env.DB_TYPE as any, // Ensure it's a valid type (e.g., 'postgres')
@@ -55,7 +56,8 @@ import { CustomThrottlerGuard } from './coustume.gaurd';
     EmailModule,
     TokensModule,
     QueueModule,
-    CloudinaryModule
+    CloudinaryModule,
+    PostModule
     
 
 

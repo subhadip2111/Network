@@ -54,7 +54,7 @@ export class AuthController {
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-    if (user.otp != dto.otp) {
+    if (user.otp !== dto.otp) {
       throw new HttpException('Invalid email or otp', HttpStatus.BAD_REQUEST);
     }
     const verifyUser = await this.userService.verifyOtp(user);
