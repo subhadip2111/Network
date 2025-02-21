@@ -63,8 +63,7 @@ console.log("post id from controller as string",postId)
   createPostDto.imageUrls = imageUrls.length > 0 ? imageUrls : undefined;
   createPostDto.videoUrl = videoUrl || null;
 
-  // Update post with new URLs
-  console.log("object",postId)
+
   return await this.postService.update(postId, createPostDto);
 }
 

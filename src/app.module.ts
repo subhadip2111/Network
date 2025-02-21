@@ -24,6 +24,7 @@ import { PostModule } from './post/post.module';
     TypeOrmModule.forRoot({
       type: process.env.DB_TYPE as any, // Ensure it's a valid type (e.g., 'postgres')
       host: process.env.DB_HOST,
+      url: process.env.DATABASE_URL,
       port: parseInt(process.env.DB_PORT, 10),
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
