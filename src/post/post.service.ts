@@ -5,34 +5,25 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from './entities/post.entity';
 import { Repository } from 'typeorm';
 import { IsUUID } from 'class-validator'; // You can use this if you want to validate the UUID format
+import { QueryPostDto } from './dto/post-query.dto';
 
 @Injectable()
 export class PostService {
   constructor(@InjectRepository(Post) private readonly postRepository: Repository<Post>) { }
   async create(createPostDto: CreatePostDto) {
-    const post = Object.create(createPostDto)
+    console.log("Creating post with data:", createPostDto);
+    const post = Object.assign(createPostDto)
     await this.postRepository.save(post);
-    console.log(post);
-
     return post;
   }
 
-  findAll() {
-    return `This action returns all post`;
-  }
 
-  async findOne(id: string) {  // Ensure that `id` is a string (UUID)
+
+  async findOne(id: string) { 
     try {
-      // Optionally validate the UUID format (uncomment if needed)
-      // if (!IsUUID(id)) {
-      //   throw new Error('Invalid UUID format');
-      // }
-  
-      console.log("Finding post with id:", id); // Log the id for debugging
-  
-      // Use `id` directly as it's a string (UUID)
+    
       const post = await this.postRepository.findOne({
-        where: { id } // No need to parse or convert to a number
+        where: { id } 
       });
   
       if (!post) {
@@ -40,7 +31,6 @@ export class PostService {
         return null;
       }
   
-      console.log("Yeah, we got the post:", post);
       return post;
     } catch (error) {
       console.log("Oops, something went wrong:", error.message);
@@ -60,7 +50,43 @@ export class PostService {
     return post;
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const post = await this.postRepository.delete(id)
   }
+
+  async getUserAllPosts(userId: string, query: QueryPostDto) {
+    let  { type, keyword, page , pageSize } = query; 
+  
+    const queryBuilder = this.postRepository.createQueryBuilder('post')
+      .where('post.userId = :userId', { userId });
+  
+    if (type) {
+      queryBuilder.andWhere('post.type = :type', { type });
+    }
+  
+    if (keyword) {
+      queryBuilder.andWhere(
+        '(post.title ILIKE :keyword OR post.content ILIKE :keyword )', 
+        { keyword: `%${keyword}%` }
+      );
+    }
+  
+    const skip = (page - 1) * pageSize;
+  
+    const [posts, total] = await queryBuilder
+      .skip(skip)
+      .take(pageSize)
+      .getManyAndCount(); 
+  
+    return {
+    
+      posts,
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / +pageSize),
+    };
+  }
+  
+  
 }

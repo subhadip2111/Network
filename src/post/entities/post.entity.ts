@@ -18,16 +18,20 @@ import {
   
   @Entity('posts')
   export class Post {
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryGeneratedColumn('uuid') 
     id: string;
-  
+    @Column({ type: 'text' ,default: ''})
+    title: string;
+
     @Column({ type: 'text' })
     content: string;
   
-    @ManyToOne(() => User, (user) => user.posts)
-    @JoinColumn({ name: 'user_id' })
+    @ManyToOne(() => User, (user) => user.posts, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'userId' }) // Explicitly define the foreign key column
     user: User;
   
+    @Column({ type: 'uuid' }) // Explicitly define the userId column
+    userId: string; // This will be stored in the database
     @Column({
       type: 'enum',
       enum: PostType,
@@ -38,11 +42,11 @@ import {
     @Column({ type: 'boolean', default: false })
     isVerified: boolean;
   
-    @Column('simple-array', { default: [] })
-    imageUrls: string[];
+    @Column('text', { default: '' })
+    imageUrls: string;
   
-    @Column({ type: 'text', nullable: true })
-    videoUrl: string | null;
+    @Column({ type: 'text',nullable:true })
+    videoUrl: string ;
   
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
