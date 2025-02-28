@@ -24,3 +24,7 @@
 # add  user get all post what ever he create with pagination and search type and keyword based functionality .
 
 
+# DAY -5 date 28-feb-2025
+# Post with feature like show interested by other  user 
+# post with reply with based on condition  for only Query has the  comment features; (CRUD)
+
