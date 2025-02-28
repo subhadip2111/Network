@@ -14,6 +14,8 @@ import {  ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { CustomThrottlerGuard } from './coustume.gaurd';
 import { PostModule } from './post/post.module';
+import { PostInterestsModule } from './post-interests/post-interests.module';
+import { PostLikesModule } from './post-likes/post-likes.module';
 
 @Module({
   imports: [ConfigModule.forRoot(),
@@ -58,7 +60,9 @@ import { PostModule } from './post/post.module';
     TokensModule,
     QueueModule,
     CloudinaryModule,
-    PostModule
+    PostModule,
+    PostInterestsModule,
+    PostLikesModule
     
 
 

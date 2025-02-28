@@ -1,4 +1,5 @@
 
+import { PostInterest } from 'src/post-interests/entities/post-interest.entity';
 import { Post } from 'src/post/entities/post.entity';
 import { Token } from 'src/tokens/entities/token.entity';
 import { UserType } from 'src/utils/enum';
@@ -48,6 +49,8 @@ export class User {
 
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
+  @OneToMany(()=>PostInterest, (postInterest) => postInterest.user)
+  interestedPosts: PostInterest[];
                          
   //   @ManyToMany(() => Project, (project) => project.members)
   //   projects: Project[];
