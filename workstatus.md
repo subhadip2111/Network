@@ -26,5 +26,4 @@
 
 # DAY -5 date 28-feb-2025
 # Post with feature like show interested by other  user 
-# post with reply with based on condition  for only Query has the  comment features; (CRUD)
 
