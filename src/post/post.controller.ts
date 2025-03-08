@@ -52,11 +52,10 @@ async uploadImage(@UploadedFile() file: Express.Multer.File) {
     }
   }
 
+  // Its returns a specefic user  all created post list.
   @UseGuards(JwtAuthGuard)
   @Get('all')
  async  findAll(@Request() req: any,@Query() query: QueryPostDto) {
-  console.log(query);
-
     const {posts,total,page,pageSize,totalPages}=await this.postService.getUserAllPosts(req.user.id,query);
     return new ApiSuccessResponse(HttpStatus.OK,true,'All posts', {posts,total,page,pageSize,totalPages})
   }
