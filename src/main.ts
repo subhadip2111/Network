@@ -8,24 +8,35 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-  .setTitle('Network-backend API')
-  .setDescription('The Network API description')
-  .setVersion('1.0')
-  .addApiKey(
-    {
-      type: 'apiKey',
-      name: 'x-api-key',
-      in: 'header',
-    },
-    'x-api-key', 
-  )
-  .addSecurityRequirements('x-api-key')
-  .build();
+    .setTitle('Network-backend API')
+    .setDescription('The Network API description')
+    .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'Authorization',
+        in: 'header',
+      },
+      'access-token', // MUST match @ApiBearerAuth('access-token')
+    )
+    .addApiKey(
+      {
+        type: 'apiKey',
+        name: 'x-api-key',
+        in: 'header',
+      },
+      'x-api-key',
+    )
+    .addSecurityRequirements('access-token') 
+    .addSecurityRequirements('x-api-key')    
+    .build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
-  app.use(new ApiKeyMiddleware().use);
 
+  app.use(new ApiKeyMiddleware().use);
   app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(process.env.PORT || 3000);

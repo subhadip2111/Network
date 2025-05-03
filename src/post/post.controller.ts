@@ -23,25 +23,25 @@ export class PostController {
   ) {
     const user = req.user
     createPostDto.userId = user.id
-    const post=await  this.postService.create(createPostDto);
+    const post = await this.postService.create(createPostDto);
     console.log(post);
-    return new ApiSuccessResponse(HttpStatus.CREATED,true,'post created successfully',post)
+    return new ApiSuccessResponse(HttpStatus.CREATED, true, 'post created successfully', post)
   }
 
 
 
 
-@Post('image')
-@UseInterceptors(FileInterceptor('file')) 
-async uploadImage(@UploadedFile() file: Express.Multer.File) {
-  try {
-    const result = await this.cloudinaryService.uploadImage(file);
-    return { url: result.secure_url };  // Returning image URL
-  } catch (error) {
-    return { error: error.message };
+  @Post('image')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadImage(@UploadedFile() file: Express.Multer.File) {
+    try {
+      const result = await this.cloudinaryService.uploadImage(file);
+      return { url: result.secure_url };  // Returning image URL
+    } catch (error) {
+      return { error: error.message };
+    }
   }
-}
-@Post('video')
+  @Post('video')
   @UseInterceptors(FileInterceptor('file'))
   async uploadVideo(@UploadedFile() file: Express.Multer.File) {
     try {
@@ -55,14 +55,14 @@ async uploadImage(@UploadedFile() file: Express.Multer.File) {
   // Its returns a specefic user  all created post list.
   @UseGuards(JwtAuthGuard)
   @Get('all')
- async  findAll(@Request() req: any,@Query() query: QueryPostDto) {
-    const {posts,total,page,pageSize,totalPages}=await this.postService.getUserAllPosts(req.user.id,query);
-    return new ApiSuccessResponse(HttpStatus.OK,true,'All posts', {posts,total,page,pageSize,totalPages})
+  async findAll(@Request() req: any, @Query() query: QueryPostDto) {
+    const { posts, total, page, pageSize, totalPages } = await this.postService.getUserAllPosts(req.user.id, query);
+    return new ApiSuccessResponse(HttpStatus.OK, true, 'All posts', { posts, total, page, pageSize, totalPages })
   }
 
   @Get(':id')
- async  findOne(@Param('id') id: string ) {
-      return this.postService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return this.postService.findOne(id);
   }
 
   @Patch('edit/:id')

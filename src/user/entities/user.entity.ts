@@ -1,15 +1,13 @@
 
 import { PostInterest } from 'src/post-interests/entities/post-interest.entity';
 import { Post } from 'src/post/entities/post.entity';
-import { Token } from 'src/tokens/entities/token.entity';
 import { UserType } from 'src/utils/enum';
 import {
-  CreateDateColumn,
+ 
   OneToMany,
-  ManyToMany,
+
   Column,
   Entity,
-  JoinTable,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -65,8 +63,8 @@ export class User {
   //   @ManyToMany(() => User, (user) => user.followers)
   //   following: User[];
 
-  @OneToMany(() => Token, (token) => token.userId, { cascade: true }) // One User can have multiple Tokens
-  tokens: Token[];
+  // @OneToMany(() => Token, (token) => token.userId, { cascade: true }) // One User can have multiple Tokens
+  // tokens: Token[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

@@ -1,37 +1,39 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { UserService } from 'src/user/user.service';
-import { PrimaryColumnCannotBeNullableError } from 'typeorm';
-
+import { CompanyService } from 'src/company/company.service';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy){
+export class JwtStrategy extends PassportStrategy(Strategy) {
+  constructor(
+    private readonly userService: UserService,
+    private readonly companyService: CompanyService,
+  ) {
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
+      secretOrKey: process.env.secret,
+    });
+  }
 
+  async validate(payload: { userId: string; ownerType: 'user' | 'company' }) {
+   console.log(payload);
+   
+    const { userId, ownerType } = payload;
 
-    constructor(
-        private readonly userService :UserService
-    ){
-        super({
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-//ignoreExpiration: just to be explicit, we choose the default false setting, 
-// which delegates the responsibility of ensuring that a JWT has not expired to the Passport module.
-//  This means that if our route is supplied with an expired JWT, the request will be denied and a 401 Unauthorized response sent
+    let owner;
 
-            ignoreExpiration: false,
-            secretOrKey: process.env.secret
-          });
-      
-
+    if (ownerType === 'user') {
+      owner = await this.userService.getUserById(+userId);
+    } else if (ownerType === 'company') {
+      owner = await this.companyService.findOne(userId);
     }
 
-    async validate(payload: any) {
-        // if we got our jwt-decoded here .after that we can call a db then set payload as the userObject itself.
-        console.log("payload",payload)
-const user=await this.userService.getUserById(payload.userId)
-if(!user){
-    return null}
-    return user;
-         
-      }
+    if (!owner) {
+      throw new UnauthorizedException('Invalid token: owner not found');
+    }
+
+    return { ...owner, ownerType }; // Attach both data and type to request.user
+  }
 }
