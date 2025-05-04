@@ -24,7 +24,7 @@ export class PostController {
     const user = req.user
     createPostDto.userId = user.id
     const post = await this.postService.create(createPostDto);
-    console.log(post);
+   
     return new ApiSuccessResponse(HttpStatus.CREATED, true, 'post created successfully', post)
   }
 

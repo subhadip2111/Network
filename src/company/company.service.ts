@@ -17,6 +17,7 @@ export class CompanyService {
   }
 
   async login(company: any, password: string) {
+
     const isMatch = await bcrypt.compare(password, company.password);
     if (!isMatch) {
       throw new Error('Invalid credentials');

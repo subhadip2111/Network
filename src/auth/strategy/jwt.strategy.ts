@@ -18,14 +18,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: { userId: string; ownerType: 'user' | 'company' }) {
-   console.log(payload);
-   
     const { userId, ownerType } = payload;
 
     let owner;
 
     if (ownerType === 'user') {
-      owner = await this.userService.getUserById(+userId);
+      owner = await this.userService.getUserById(userId);
     } else if (ownerType === 'company') {
       owner = await this.companyService.findOne(userId);
     }
@@ -34,6 +32,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Invalid token: owner not found');
     }
 
-    return { ...owner, ownerType }; // Attach both data and type to request.user
+    return { ...owner, ownerType }; 
   }
 }

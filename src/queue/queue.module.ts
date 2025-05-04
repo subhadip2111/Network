@@ -1,10 +1,11 @@
-/* eslint-disable prettier/prettier */
 
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { QueueProcessor } from './queue.processor';
 import { QueueService } from './queue.service';
 import { EmailModule } from 'src/email/email.module';
+import { AssessmentQueueProcessor } from './assessmentQueueProcessor';
+import { submitAssesMentQueueProcessor } from './submitAssesMentQueueProcessor';
 
 @Module({
   imports: [
@@ -31,8 +32,14 @@ import { EmailModule } from 'src/email/email.module';
     BullModule.registerQueue({
       name: 'email-queue',
     }),
+    BullModule.registerQueue({
+      name: 'assessment-email-queue',
+    }),
+    BullModule.registerQueue({
+      name: 'submit-assessment-email-queue',
+    }),
   ],
-  providers: [QueueProcessor, QueueService],
+  providers: [QueueProcessor, QueueService,AssessmentQueueProcessor,submitAssesMentQueueProcessor],
   exports: [QueueService],
 })
 export class QueueModule {}

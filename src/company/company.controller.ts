@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Delete, HttpStatus, Patch, Body, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Param, Delete, HttpStatus, Patch, Body, UseGuards, Query, Request } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { ApiErrorResponse, ApiSuccessResponse } from 'src/utils/ApiSuccesResponse';
 import { CompanyProfileDto } from './dto/update-company.dto';
@@ -9,43 +9,36 @@ import { QueryCompanyDto } from './dto/query-company.dto';
 @Controller('company')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) { }
-
+  @ApiOperation({ summary: 'Get all company list' })
+  @UseGuards(JwtAuthGuard)
   @Get('/all/public')
- async  findAll(@Query() query: QueryCompanyDto) {
-   
-    const {companies,
-      total,
-      totalPages,
-      currentPage: page,}=await this.companyService.findAll(query);
-    return new ApiSuccessResponse(
-      HttpStatus.OK,
-      true,
-      'All companies fetched successfully',
-      { companies, total, totalPages, page },
-    );
+  async findAll(@Query() query: QueryCompanyDto ,@Request() req: any) {
+    const { companies, total, totalPages, currentPage: page, } = await this.companyService.findAll(query);
+    return new ApiSuccessResponse(HttpStatus.OK, true, 'All companies fetched successfully', { companies, total, totalPages, page },);
   }
 
   @Get('profile/:companyId')
   @ApiOperation({ summary: 'Get company by ID' })
-  @ApiParam({ name: 'companyId',type: 'string',description: 'UUID of the company',required: true,})
+  @ApiParam({ name: 'companyId', type: 'string', description: 'UUID of the company', required: true, })
   @ApiBearerAuth('access-token')
-  @ApiSecurity('x-api-key') 
+  @ApiSecurity('x-api-key')
   async findOne(@Param('companyId') companyId: string) {
     const company = await this.companyService.findOne(companyId);
     if (!company) {
       throw new Error('Company not found');
     }
-    return new ApiSuccessResponse( HttpStatus.OK, true,'Company details fetched successfully',company, );
+    return new ApiSuccessResponse(HttpStatus.OK, true, 'Company details fetched successfully', company,);
   }
 
   @Patch('update/:companyId')
   @ApiOperation({ summary: 'Update company details' })
-  @ApiParam({ name: 'companyId',
-    type: 'string', description: 'UUID of the company',required: true,
+  @ApiParam({
+    name: 'companyId',
+    type: 'string', description: 'UUID of the company', required: true,
   })
-  @ApiBody({description: 'Company details to update', type: CompanyProfileDto,required: true,})
+  @ApiBody({ description: 'Company details to update', type: CompanyProfileDto, required: true, })
   @ApiBearerAuth('access-token')
-  @ApiSecurity('x-api-key') 
+  @ApiSecurity('x-api-key')
 
   @UseGuards(JwtAuthGuard)
   async update(

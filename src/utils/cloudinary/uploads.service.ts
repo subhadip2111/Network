@@ -34,5 +34,21 @@ export class CloudinaryService {
       ).end(file.buffer);
     });
   }
+  async uploadRawFile(file: Express.Multer.File): Promise<UploadApiResponse> {
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        {
+          resource_type: 'raw',
+          folder: 'uploads/files',
+          public_id: file.originalname.split('.')[0], // optional: remove extension
+        },
+        (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
+        },
+      ).end(file.buffer);
+    });
+  }
+  
 }
 

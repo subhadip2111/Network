@@ -9,7 +9,7 @@ export class AuthService {
         ;
     }
 
-    async validateUser(id: number) {
+    async validateUser(id: string) {
         const user = await this.userService.getUserById(id)
         return user
     }
