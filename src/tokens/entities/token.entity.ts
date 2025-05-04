@@ -1,9 +1,13 @@
-import { User } from 'src/user/entities/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 export enum TokenType {
   ACCESS = 'access',
   REFRESH = 'refresh',
+}
+
+export enum TokenOwnerType {
+  USER = 'user',
+  COMPANY = 'company',
 }
 
 @Entity()
@@ -11,8 +15,12 @@ export class Token {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User, (user) => user.tokens, { onDelete: 'CASCADE' }) // A user can have multiple tokens
-  userId: User;
+  // Polymorphic relation
+  @Column({ type: 'uuid' })
+  ownerId: string; // Can be User ID or Company ID
+
+  @Column({ type: 'enum', enum: TokenOwnerType })
+  ownerType: TokenOwnerType; // To distinguish between User or Company
 
   @Column({ type: 'enum', enum: TokenType })
   type: TokenType;
@@ -23,9 +31,9 @@ export class Token {
   @Column({ type: 'timestamp', nullable: true })
   expiresAt: Date;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 }

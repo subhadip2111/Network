@@ -27,13 +27,12 @@ export class PostService {
       });
   
       if (!post) {
-        console.log("Post not found!");
+       
         return null;
       }
   
       return post;
     } catch (error) {
-      console.log("Oops, something went wrong:", error.message);
       return null;
     }
   }

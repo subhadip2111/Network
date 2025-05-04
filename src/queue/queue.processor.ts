@@ -17,7 +17,7 @@ constructor (private readonly emailService: EmailService) {}
 
 
     console.log(`Email sent to ${job.data.email}`);
-    await job.queue.clean(0, 'completed'); // Clears completed jobs immediately
-    await job.queue.clean(0, 'failed'); // Clears failed jobs (optional)
+    await job.queue.clean(0, 'completed'); 
+    await job.queue.clean(0, 'failed'); 
   }
 }

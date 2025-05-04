@@ -1,22 +1,21 @@
 
+import { AssessmentParticipant } from 'src/assesment-participant/entities/assesment-participant.entity';
 import { PostInterest } from 'src/post-interests/entities/post-interest.entity';
 import { Post } from 'src/post/entities/post.entity';
-import { Token } from 'src/tokens/entities/token.entity';
 import { UserType } from 'src/utils/enum';
 import {
-  CreateDateColumn,
+
   OneToMany,
-  ManyToMany,
+
   Column,
   Entity,
-  JoinTable,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column({ unique: true })
   email: string;
@@ -49,24 +48,10 @@ export class User {
 
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
-  @OneToMany(()=>PostInterest, (postInterest) => postInterest.user)
+  @OneToMany(() => PostInterest, (postInterest) => postInterest.user)
   interestedPosts: PostInterest[];
-                         
-  //   @ManyToMany(() => Project, (project) => project.members)
-  //   projects: Project[];
-
-  //   @OneToMany(() => Comment, (comment) => comment.user)
-  //   comments: Comment[];
-
-  //   @ManyToMany(() => User, (user) => user.following)
-  //   @JoinTable()
-  //   followers: User[];
-
-  //   @ManyToMany(() => User, (user) => user.followers)
-  //   following: User[];
-
-  @OneToMany(() => Token, (token) => token.userId, { cascade: true }) // One User can have multiple Tokens
-  tokens: Token[];
+  @OneToMany(() => AssessmentParticipant, (participant) => participant.user)
+  assessmentParticipants: AssessmentParticipant[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

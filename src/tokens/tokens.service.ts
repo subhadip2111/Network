@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 // import { Token, TokenType } from '../entities/token.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Token ,TokenType} from './entities/token.entity';
+import { Token ,TokenOwnerType,TokenType} from './entities/token.entity';
 
 @Injectable()
 export class TokensService {
@@ -12,29 +12,35 @@ export class TokensService {
     @InjectRepository(Token) private readonly tokenRepo: Repository<Token>,
   ) {}
 
-  async generateToken(user: any) {
+  async generateToken(userOrCompany: any, ownerType: TokenOwnerType) {
+    const payload = {
+      userId: userOrCompany.id,
+      ownerType,
+    };
+  
     // Generate Access Token
-    const accessToken = this.jwtService.sign(
-      { userId: user.id },
-      { secret: process.env.secret, expiresIn: '30d' },
-    );
-
+    const accessToken = this.jwtService.sign(payload, {
+      secret: process.env.secret, 
+      expiresIn: '30d',
+    });
+  
     // Generate Refresh Token
-    const refreshToken = this.jwtService.sign(
-      { userId: user.id },
-      { secret: process.env.secret, expiresIn: '90d' }, // Refresh token valid for 7 days
-    );
-
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: process.env.secret,
+      expiresIn: '90d',
+    });
+  
     // Save Refresh Token in Database
     const newToken = this.tokenRepo.create({
-      userId: user.id,
+      ownerId: userOrCompany.id,
+      ownerType, // <--- this line is added
       type: TokenType.REFRESH,
       token: refreshToken,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days expiry
+      expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days expiry
     });
-
+  
     await this.tokenRepo.save(newToken);
-
+  
     return {
       accessToken,
       refreshToken,

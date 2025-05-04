@@ -10,9 +10,10 @@ import { EmailModule } from 'src/email/email.module';
 import { TokensModule } from 'src/tokens/tokens.module';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { QueueModule } from 'src/queue/queue.module';
+import { CompanyModule } from 'src/company/company.module';
 
 @Module({
-  imports: [UserModule, QueueModule, PassportModule, TokensModule, EmailModule, JwtModule.register({
+  imports: [UserModule, QueueModule,CompanyModule, PassportModule, TokensModule, EmailModule, JwtModule.register({
       secret: process.env.secret,
       signOptions: {
         expiresIn: process.env.expireIn,

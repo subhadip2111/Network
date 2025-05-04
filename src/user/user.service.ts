@@ -37,33 +37,31 @@ export class UserService {
     return `This action returns all user`;
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const user = await this.userRepo.findOne({ where: { id: id } });
     return user;
   }
 
  async verifyOtp(user: any) {
-  user.otp = null; // Clear OTP after successful verification
+  user.otp = null; 
   await this.userRepo.save(user);
   return user
 }
 
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.getUserById(id);
     Object.assign(user, updateUserDto);
     await this.userRepo.save(user);
     return user;
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     return await this.userRepo.findOneByOrFail({ id: id });
   }
 
-  async getUserById(id: number): Promise<User | null> {
-    console.log('id', id);
-    const user = await this.userRepo.findOne({ where: { id } });
-    console.log('user data', user);
+  async getUserById(id: string): Promise<User | null> {
+    const user = await this.userRepo.findOne({ where: { id :id} });
     return user;
   }
 }

@@ -16,6 +16,9 @@ import { CustomThrottlerGuard } from './coustume.gaurd';
 import { PostModule } from './post/post.module';
 import { PostInterestsModule } from './post-interests/post-interests.module';
 import { PostLikesModule } from './post-likes/post-likes.module';
+import { CompanyModule } from './company/company.module';
+import { CompanyAssesmentModule } from './company-assesment/company-assesment.module';
+import { AssesmentParticipantModule } from './assesment-participant/assesment-participant.module';
 
 @Module({
   imports: [ConfigModule.forRoot(),
@@ -24,7 +27,7 @@ import { PostLikesModule } from './post-likes/post-likes.module';
       limit: 3,
     }]),
     TypeOrmModule.forRoot({
-      type: "postgres", // Ensure it's a valid type (e.g., 'postgres')
+      type: "postgres", 
       host: process.env.DB_HOST,
       url: process.env.DATABASE_URL,
       port: parseInt(process.env.DB_PORT, 10),
@@ -32,28 +35,12 @@ import { PostLikesModule } from './post-likes/post-likes.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: process.env.DB_SYNC === 'true', // Boolean flag from .env
-      logging: process.env.DB_LOGGING === 'true', // Enable logging conditionally
-      ssl: process.env.DB_SSL === 'true', // Enable SSL conditionally
-      extra: process.env.DB_SSL === 'true' ? { ssl: { rejectUnauthorized: false } } : undefined, // SSL Config
+      synchronize: process.env.DB_SYNC === 'true', 
+      logging: process.env.DB_LOGGING === 'true', 
+      ssl: process.env.DB_SSL === 'true', 
+      extra: process.env.DB_SSL === 'true' ? { ssl: { rejectUnauthorized: false } } : undefined, 
     }),
-    
-    // BullModule.forRoot({
-    //   redis: {
-    //     host: process.env.REDIS_HOST,
-    //     port: parseInt(process.env.REDIS_PORT, 10),
-    //     username: process.env.REDIS_USERNAME || undefined, // Ensure it's optional
-    //     password: process.env.REDIS_PASSWORD || undefined, // Ensure it's optional
-    //     tls: process.env.REDIS_TLS === 'true' ? {} : undefined, // Enable TLS conditionally
-    //     maxRetriesPerRequest: 5, // Reduce retry attempts
-    //     retryStrategy(times) {
-    //       if (times >= 10) return null; // Stop retrying after 10 attempts
-    //       return Math.min(times * 50, 2000); // Exponential backoff
-    //     },
-    //   },
-    // }),
     QueueModule,
-    
     UserModule,
     AuthModule,
     EmailModule,
@@ -62,15 +49,15 @@ import { PostLikesModule } from './post-likes/post-likes.module';
     CloudinaryModule,
     PostModule,
     PostInterestsModule,
-    PostLikesModule
-    
-
-
+    PostLikesModule,
+    CompanyModule,
+    CompanyAssesmentModule,
+    AssesmentParticipantModule
   ],
   controllers: [AppController],
   providers: [AppService,{
     provide: APP_GUARD,
-    useClass: CustomThrottlerGuard, // ✅ This is the correct way
+    useClass: CustomThrottlerGuard, 
   },]
 })
 export class AppModule {}
