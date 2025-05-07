@@ -14,11 +14,10 @@ import {  ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { CustomThrottlerGuard } from './coustume.gaurd';
 import { PostModule } from './post/post.module';
-import { PostInterestsModule } from './post-interests/post-interests.module';
-import { PostLikesModule } from './post-likes/post-likes.module';
 import { CompanyModule } from './company/company.module';
 import { CompanyAssesmentModule } from './company-assesment/company-assesment.module';
 import { AssesmentParticipantModule } from './assesment-participant/assesment-participant.module';
+import { PostInteractionModule } from './post-interaction/post-interaction.module';
 
 @Module({
   imports: [ConfigModule.forRoot(),
@@ -48,11 +47,11 @@ import { AssesmentParticipantModule } from './assesment-participant/assesment-pa
     QueueModule,
     CloudinaryModule,
     PostModule,
-    PostInterestsModule,
-    PostLikesModule,
+   
     CompanyModule,
     CompanyAssesmentModule,
-    AssesmentParticipantModule
+    AssesmentParticipantModule,
+    PostInteractionModule
   ],
   controllers: [AppController],
   providers: [AppService,{

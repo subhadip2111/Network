@@ -19,25 +19,23 @@ export class PostService {
 
 
 
-  async findOne(id: string) { 
+  async findOne(postId: string) {
     try {
-    
       const post = await this.postRepository.findOne({
-        where: { id } 
+        where: { id:postId }
       });
-  
       if (!post) {
-       
-        return null;
+
+         throw new NotFoundException(`Post with ID ${postId} not found`);
       }
-  
+
       return post;
     } catch (error) {
       return null;
     }
   }
-  
-  
+
+
 
   async update(postId: string, updatePostDto: UpdatePostDto) {
     const post = await this.postRepository.findOne({ where: { id: postId } })
@@ -54,31 +52,31 @@ export class PostService {
   }
 
   async getUserAllPosts(userId: string, query: QueryPostDto) {
-    let  { type, keyword, page , pageSize } = query; 
-  
+    let { type, keyword, page, pageSize } = query;
+
     const queryBuilder = this.postRepository.createQueryBuilder('post')
       .where('post.userId = :userId', { userId });
-  
+
     if (type) {
       queryBuilder.andWhere('post.type = :type', { type });
     }
-  
+
     if (keyword) {
       queryBuilder.andWhere(
-        '(post.title ILIKE :keyword OR post.content ILIKE :keyword )', 
+        '(post.title ILIKE :keyword OR post.content ILIKE :keyword )',
         { keyword: `%${keyword}%` }
       );
     }
-  
+
     const skip = (page - 1) * pageSize;
-  
+
     const [posts, total] = await queryBuilder
       .skip(skip)
       .take(pageSize)
-      .getManyAndCount(); 
-  
+      .getManyAndCount();
+
     return {
-    
+
       posts,
       total,
       page,
@@ -86,6 +84,6 @@ export class PostService {
       totalPages: Math.ceil(total / +pageSize),
     };
   }
-  
-  
+
+
 }

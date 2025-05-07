@@ -1,4 +1,3 @@
-import { PostInterest } from 'src/post-interests/entities/post-interest.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
   Entity,
@@ -50,13 +49,7 @@ export class Post {
   @Column({ type: 'text', nullable: true })
   videoUrl: string;
 
-  @OneToMany(
-    () => PostInterest,
-    (post_interests) => {
-      post_interests.post;
-    },
-  )
-  interestedUsers: PostInterest[];
+
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

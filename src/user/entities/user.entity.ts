@@ -1,6 +1,6 @@
 
 import { AssessmentParticipant } from 'src/assesment-participant/entities/assesment-participant.entity';
-import { PostInterest } from 'src/post-interests/entities/post-interest.entity';
+import { PostInteraction } from 'src/post-interaction/entities/post-interaction.entity';
 import { Post } from 'src/post/entities/post.entity';
 import { UserType } from 'src/utils/enum';
 import {
@@ -48,11 +48,12 @@ export class User {
 
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
-  @OneToMany(() => PostInterest, (postInterest) => postInterest.user)
-  interestedPosts: PostInterest[];
+
   @OneToMany(() => AssessmentParticipant, (participant) => participant.user)
   assessmentParticipants: AssessmentParticipant[];
 
+  @OneToMany(() => PostInteraction, (interaction) => interaction.user)
+  interactions: PostInteraction[];
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 }

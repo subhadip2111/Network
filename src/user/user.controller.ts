@@ -22,7 +22,7 @@ import { ApiSuccessResponse } from 'src/utils/ApiSuccesResponse';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from 'src/utils/cloudinary/uploads.service';
 import { ApiTags } from '@nestjs/swagger';
-@ApiTags('User') // Tag for this controller
+@ApiTags('User') 
 @Controller('user')
 export class UserController {
   constructor(
