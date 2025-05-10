@@ -18,6 +18,8 @@ import { CompanyModule } from './company/company.module';
 import { CompanyAssesmentModule } from './company-assesment/company-assesment.module';
 import { AssesmentParticipantModule } from './assesment-participant/assesment-participant.module';
 import { PostInteractionModule } from './post-interaction/post-interaction.module';
+import { KafkaNoSpecModule } from './kafka--no-spec/kafka--no-spec.module';
+import { CacheModule } from './cache/cache.module';
 
 @Module({
   imports: [ConfigModule.forRoot(),
@@ -51,7 +53,9 @@ import { PostInteractionModule } from './post-interaction/post-interaction.modul
     CompanyModule,
     CompanyAssesmentModule,
     AssesmentParticipantModule,
-    PostInteractionModule
+    PostInteractionModule,
+    KafkaNoSpecModule,
+    CacheModule
   ],
   controllers: [AppController],
   providers: [AppService,{

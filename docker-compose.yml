@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.0.1
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - '2181:2181'
+
+  kafka:
+    image: confluentinc/cp-kafka:7.0.1
+    depends_on:
+      - zookeeper
+    ports:
+      - '9092:9092'
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  redis:
+    image: redis:6.2
+    ports:
+      - '6380:6379' # Expose container port 6379 as 6380 to host
+
+  nest-app:
+    build: .
+    ports:
+      - '3000:3000'
+    depends_on:
+      - kafka
+      - redis
+    environment:
+      POST_SERVICE_REDIS_HOST: redis://redis:6379
+      KAFKA_BROKER: kafka:9092
+    command: npm run start:dev
