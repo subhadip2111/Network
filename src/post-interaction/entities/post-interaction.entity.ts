@@ -14,12 +14,11 @@ export enum InteractionType {
     COLLABORATE = 'collaborate',
 }
 
-@Entity()
+@Entity('postInteractions')
 export class PostInteraction {
     @PrimaryGeneratedColumn('uuid')
     id: string;
-    @Column()
-    postId: string;
+
 
     @ManyToOne(() => User, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'userId' })
@@ -33,6 +32,8 @@ export class PostInteraction {
     @ManyToOne(() => Post)
     @JoinColumn({ name: 'postId' })
     post: Post;
+    @Column()
+    postId: string;
 
     @CreateDateColumn()
     createdAt: Date;

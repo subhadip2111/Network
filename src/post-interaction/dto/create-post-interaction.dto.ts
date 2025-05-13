@@ -1,18 +1,31 @@
-export class CreatePostInteractionDto {}
+import { ApiProperty } from "@nestjs/swagger";
+import { IsEnum, IsNotEmpty, IsOptional } from "class-validator";
 
 
 export enum ReactionType {
-    LIKE = 'like',
-    LOVE = 'love',
-    CELEBRATE = 'celebrate',
-    SUPPORT = 'support',
-    INSIGHTFUL = 'insightful',
-  }
+  LIKE = 'like',
+  CELEBRATE = 'celebrate',
+  SUPPORT = 'support',
+  INSIGHTFUL = 'insightful',
+}
+export class CreatePostInteractionDto {
+  @IsOptional()
+  @ApiProperty()
+  postId: string;
+
+  @IsOptional()
+  @ApiProperty()
+  userId: string;
+
+
+  @IsNotEmpty()
+  @IsEnum(ReactionType)
+  @ApiProperty()
+  reaction: ReactionType;
+}
+
+
+
   
-  export class PostReactionKafkaPayload {
-    postId: string;
-    userId: string;
-    userName: string;
-    reaction: ReactionType;
-  }
+
   

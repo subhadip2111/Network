@@ -50,7 +50,18 @@ export class Post {
   videoUrl: string;
 
 
+  @Column({ type: 'int', nullable: true, default: 0 })
+  likeCount: number;
 
+  @Column({ type: 'int', nullable: true, default: 0 })
+  collaboratorCount: number;
+
+  @Column({ type: 'int', nullable: true, default: 0 })
+  supportCount: number;
+
+  @Column({ type: 'int', nullable: true, default: 0 })
+  insightfulCount: number;
+  
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 

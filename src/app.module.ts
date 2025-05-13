@@ -19,8 +19,6 @@ import { CompanyAssesmentModule } from './company-assesment/company-assesment.mo
 import { AssesmentParticipantModule } from './assesment-participant/assesment-participant.module';
 import { PostInteractionModule } from './post-interaction/post-interaction.module';
 
-import { RedisModule } from './redis/redis.module';
-import { KafkaModule } from './kafka/kafka.module';
 
 @Module({
   imports: [ConfigModule.forRoot(),
@@ -55,8 +53,7 @@ import { KafkaModule } from './kafka/kafka.module';
     CompanyAssesmentModule,
     AssesmentParticipantModule,
     PostInteractionModule,
-    KafkaModule,
-    RedisModule,
+ 
       
   ],
   controllers: [AppController],

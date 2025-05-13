@@ -9,9 +9,9 @@ import { QueryPostDto } from './dto/post-query.dto';
 
 @Injectable()
 export class PostService {
-  constructor(@InjectRepository(Post) private readonly postRepository: Repository<Post>) { }
+  constructor(@InjectRepository(Post) private readonly postRepository: Repository<Post>
+) { }
   async create(createPostDto: CreatePostDto) {
-    console.log("Creating post with data:", createPostDto);
     const post = Object.assign(createPostDto)
     await this.postRepository.save(post);
     return post;
@@ -38,6 +38,16 @@ export class PostService {
 
 
   async update(postId: string, updatePostDto: UpdatePostDto) {
+    const post = await this.postRepository.findOne({ where: { id: postId } })
+    if (!post) {
+      throw new NotFoundException(`Post with ID ${postId} not found`);
+    }
+    Object.assign(post, updatePostDto);
+    await this.postRepository.save(post);
+    return post;
+  }
+
+  async updateIntractionCount(postId: string, updatePostDto: any) {
     const post = await this.postRepository.findOne({ where: { id: postId } })
     if (!post) {
       throw new NotFoundException(`Post with ID ${postId} not found`);

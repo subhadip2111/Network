@@ -7,8 +7,8 @@ import { CloudinaryService } from 'src/utils/cloudinary/uploads.service';
 import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { ApiSuccessResponse } from 'src/utils/ApiSuccesResponse';
 import { QueryPostDto } from './dto/post-query.dto';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiQuery, ApiSecurity } from '@nestjs/swagger';
-
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiQuery, ApiSecurity, ApiTags } from '@nestjs/swagger';
+@ApiTags('Post')
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService,

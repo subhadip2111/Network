@@ -1,34 +1,89 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpStatus, Request } from '@nestjs/common';
 import { PostInteractionService } from './post-interaction.service';
 import { CreatePostInteractionDto } from './dto/create-post-interaction.dto';
 import { UpdatePostInteractionDto } from './dto/update-post-interaction.dto';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/gaurds/jwt.authGaurds';
+import { PostService } from 'src/post/post.service';
+import { ApiErrorResponse, ApiSuccessResponse } from 'src/utils/ApiSuccesResponse';
+import { InteractionType } from './entities/post-interaction.entity';
 
-@Controller('post-interaction')
+
+
+@ApiTags('Post-interactions')
+@Controller('post-interactions')
 export class PostInteractionController {
-  constructor(private readonly postInteractionService: PostInteractionService) {}
+  constructor(private readonly postInteractionService: PostInteractionService,
+    private readonly postService: PostService
 
-  @Post()
-  create(@Body() createPostInteractionDto: CreatePostInteractionDto) {
-    return this.postInteractionService.create(createPostInteractionDto);
+
+  ) { }
+
+  @ApiOperation({ summary: 'give a post Intraction ' })
+  @ApiBearerAuth('access-token')
+  @ApiSecurity('x-api-key')
+  @ApiParam({ name: 'postId', description: 'ID of the post to interact with', required: true })
+  @ApiBody({type:CreatePostInteractionDto,description:'',required:true})
+  @UseGuards(JwtAuthGuard)
+  @Post('/:postId')
+  async createInteraction(@Body() createPostInteractionDto: CreatePostInteractionDto, @Param('postId') postId: string, @Request() req: any) {
+    const postDetails = await this.postService.findOne(postId);
+    if (!postDetails) { return new ApiErrorResponse(HttpStatus.NOT_FOUND, false, 'Post not found ') }
+    createPostInteractionDto.postId = postId;
+    createPostInteractionDto.userId = req.user.id
+    const saveIntraction = await this.postInteractionService.create(createPostInteractionDto)
+    const updatedCounts: Partial<Record<'likeCount' | 'colabratorCount' | 'supportCount' | 'insightfulCount', number>> = {};
+    switch (createPostInteractionDto.reaction) {
+      case 'like':
+        updatedCounts.likeCount = (postDetails.likeCount || 0) + 1;
+        break;
+      case 'celebrate':
+        updatedCounts.colabratorCount = (postDetails.collaboratorCount || 0) + 1;
+        break;
+      case 'support':
+        updatedCounts.supportCount = (postDetails.supportCount || 0) + 1;
+        break;
+      case 'insightful':
+        updatedCounts.insightfulCount = (postDetails.insightfulCount || 0) + 1;
+        break;
+      default:
+        break;  
+    }
+   await this.postService.updateIntractionCount(postId, updatedCounts);
+    return new ApiSuccessResponse(HttpStatus.CREATED, true, 'Interaction added successfully', saveIntraction);
   }
 
-  @Get()
-  findAll() {
-    return this.postInteractionService.findAll();
+
+  @ApiOperation({ summary: 'Get a post Intraction details' })
+  @Get('/:postId')
+  @ApiBearerAuth('access-token')
+  @ApiSecurity('x-api-key')
+  @ApiParam({ name: 'postId', description: 'give the postId', required: true })
+  @UseGuards(JwtAuthGuard)
+  async getAllInteractions(@Param('postId') postId: string) {
+    const postDetails = await this.postService.findOne(postId);
+    if (!postDetails) { return new ApiErrorResponse(HttpStatus.NOT_FOUND, false, 'Post not found ') }
+const postIntractionDetails=await this.postInteractionService.findAlldata(postId)
+return new ApiSuccessResponse(HttpStatus.OK,true,'Intraction details ',postIntractionDetails)
+
+
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postInteractionService.findOne(+id);
+  async getInteractionById(@Param('id') id: string) {
+    return this.postInteractionService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostInteractionDto: UpdatePostInteractionDto) {
-    return this.postInteractionService.update(+id, updatePostInteractionDto);
+  async updateInteraction(
+    @Param('id') id: string,
+    @Body() updatePostInteractionDto: UpdatePostInteractionDto,
+  ) {
+    return this.postInteractionService.update(id, updatePostInteractionDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postInteractionService.remove(+id);
+  async deleteInteraction(@Param('id') id: string) {
+    return this.postInteractionService.remove(id);
   }
 }
