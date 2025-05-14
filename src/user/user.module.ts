@@ -7,9 +7,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { CloudinaryModule } from 'src/utils/cloudinary/cloudinary.module';
 import { PostModule } from 'src/post/post.module';
+import { PostInteractionModule } from 'src/post-interaction/post-interaction.module';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([User]),CloudinaryModule ,PostModule],
+  imports:[TypeOrmModule.forFeature([User]),CloudinaryModule ,PostModule,PostInteractionModule],
   controllers: [UserController],
   providers: [UserService,],
   exports:[UserService]

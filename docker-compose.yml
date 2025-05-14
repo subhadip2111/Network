@@ -1,0 +1,101 @@
+version: '3.8'
+
+services:
+  # Redis (only for development)
+  redis:
+    image: redis:alpine
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    profiles: ["development"]
+
+  # Kafka (only for development)
+  kafka:
+    image: confluentinc/cp-kafka:7.3.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    networks:
+      - app-network
+    profiles: ["development"]
+
+  # Zookeeper (only for development)
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.3.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - app-network
+    profiles: ["development"]
+
+  # Main application service
+  app:
+    build: 
+      context: .
+      args:
+        - NODE_ENV=${NODE_ENV:-production}
+    ports:
+      - "4040:4040"
+    environment:
+      - PORT=4040
+      # Node Mailer
+      - NODE_MAILER_USER=${NODE_MAILER_USER}
+      - NODE_MAILER_PASSWORD=${NODE_MAILER_PASSWORD}
+      - NODE_MAILER_HOST=${NODE_MAILER_HOST}
+      # Auth
+      - expireIn=${expireIn}
+      - secret=${secret}
+      # Redis (conditional based on environment)
+      - POST_SERVICE_REDIS_HOST=${POST_SERVICE_REDIS_HOST:-redis}
+      - POST_SERVICE_REDIS_PORT=${POST_SERVICE_REDIS_PORT:-6379}
+      # Kafka (conditional based on environment)
+      - KAFKA_BROKER=${KAFKA_BROKER:-kafka:9092}
+      - KAFKA_CLIENT_ID=${KAFKA_CLIENT_ID}
+      - KAFKA_GROUP_ID=${KAFKA_GROUP_ID}
+      # PostgreSQL
+      - DB_TYPE=${DB_TYPE}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_SYNC=${DB_SYNC}
+      - DB_LOGGING=${DB_LOGGING}
+      - DB_SSL=${DB_SSL}
+      # Cloudinary
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      # Environment
+      - NODE_ENV=${NODE_ENV:-production}
+    networks:
+      - app-network
+    restart: unless-stopped
+    depends_on:
+      condition: service_healthy
+      - redis
+      - kafka
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  redis_data:
+    name: redis_data

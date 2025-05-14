@@ -13,6 +13,7 @@ import {
   Request,
   HttpException,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -21,13 +22,15 @@ import { JwtAuthGuard } from 'src/auth/gaurds/jwt.authGaurds';
 import { ApiSuccessResponse } from 'src/utils/ApiSuccesResponse';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from 'src/utils/cloudinary/uploads.service';
-import { ApiTags } from '@nestjs/swagger';
-@ApiTags('User') // Tag for this controller
+import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { PostInteractionService } from 'src/post-interaction/post-interaction.service';
+@ApiTags('User') 
 @Controller('user')
 export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly cloudinaryService: CloudinaryService,
+    private readonly postIntractionService:PostInteractionService
   ) {}
 
   @Get()
@@ -73,5 +76,15 @@ export class UserController {
   @Delete(':userId')
   async remove(@Param('userId') id: string) {
     return await this.userService.remove(id);
+  }
+
+  @ApiOperation({ summary: 'My feeds' })
+  @ApiParam({name:"userid",description:"give the userId in params",required:true})
+  @UseGuards(JwtAuthGuard)
+  @Get('my-feeds/:userId')
+  async getMyFeedsdata(@Param('userId')userId:string,@Query()query:any){
+    const myfeeds=await this.postIntractionService.myfeedsData(userId,query.limit)
+    return new ApiSuccessResponse(HttpStatus.OK,true,'my feed data',myfeeds)
+
   }
 }

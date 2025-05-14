@@ -1,31 +1,25 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreatePostDto } from './create-post.dto';
-import {
-    IsArray,
-    IsEnum,
-    IsNotEmpty,
-    IsOptional,
-    IsString,
-    IsUrl,
-} from 'class-validator';
+import { IsEnum, IsOptional, IsString, IsNumber } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PostType } from '../entities/post.entity';
 
 export class QueryPostDto {
-    @IsEnum(PostType)
-    @IsOptional()
-    @IsString()
-    @IsEnum(PostType)
-    type: PostType;
+  @ApiPropertyOptional({ enum: PostType, description: 'Type of post' })
+  @IsOptional()
+  @IsEnum(PostType)
+  type?: PostType;
 
-    @IsOptional()
-    @IsString()
-    keyword: string;
+  @ApiPropertyOptional({ description: 'Search keyword' })
+  @IsOptional()
+  @IsString()
+  keyword?: string;
 
-    @IsOptional()
-    @IsString()
-    page: number;
+  @ApiPropertyOptional({ description: 'Page number', example: 1 })
+  @IsOptional()
+  @IsNumber()
+  page?: number;
 
-    @IsOptional()
-    @IsString()
-    pageSize: number;
+  @ApiPropertyOptional({ description: 'Number of posts per page', example: 10 })
+  @IsOptional()
+  @IsNumber()
+  pageSize?: number;
 }
