@@ -7,6 +7,7 @@ export enum ReactionType {
   CELEBRATE = 'celebrate',
   SUPPORT = 'support',
   INSIGHTFUL = 'insightful',
+  COLLABORATE='colabrate'
 }
 export class CreatePostInteractionDto {
   @IsOptional()
@@ -21,7 +22,7 @@ export class CreatePostInteractionDto {
   @IsNotEmpty()
   @IsEnum(ReactionType)
   @ApiProperty()
-  reaction: ReactionType;
+  type: ReactionType;
 }
 
 

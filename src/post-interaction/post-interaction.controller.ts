@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpStatus, Request } from '@nestjs/common';
 import { PostInteractionService } from './post-interaction.service';
-import { CreatePostInteractionDto } from './dto/create-post-interaction.dto';
+import { CreatePostInteractionDto, ReactionType } from './dto/create-post-interaction.dto';
 import { UpdatePostInteractionDto } from './dto/update-post-interaction.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/gaurds/jwt.authGaurds';
@@ -26,31 +26,56 @@ export class PostInteractionController {
   @ApiBody({type:CreatePostInteractionDto,description:'',required:true})
   @UseGuards(JwtAuthGuard)
   @Post('/:postId')
-  async createInteraction(@Body() createPostInteractionDto: CreatePostInteractionDto, @Param('postId') postId: string, @Request() req: any) {
+  async createInteraction(
+    @Body() createPostInteractionDto: CreatePostInteractionDto,
+    @Param('postId') postId: string,
+    @Request() req: any,
+  ) {
     const postDetails = await this.postService.findOne(postId);
-    if (!postDetails) { return new ApiErrorResponse(HttpStatus.NOT_FOUND, false, 'Post not found ') }
+    if (!postDetails) {
+      return new ApiErrorResponse(HttpStatus.NOT_FOUND, false, 'Post not found ');
+    }
+
     createPostInteractionDto.postId = postId;
-    createPostInteractionDto.userId = req.user.id
-    const saveIntraction = await this.postInteractionService.create(createPostInteractionDto)
-    const updatedCounts: Partial<Record<'likeCount' | 'colabratorCount' | 'supportCount' | 'insightfulCount', number>> = {};
-    switch (createPostInteractionDto.reaction) {
-      case 'like':
+    createPostInteractionDto.userId = req.user.id;
+
+    const saveIntraction = await this.postInteractionService.create(
+      createPostInteractionDto,
+    );
+
+    const updatedCounts: Partial<
+      Record<
+        'likeCount' | 'collaboratorCount' | 'supportCount' | 'insightfulCount',
+        number
+      >
+    > = {};
+
+    switch (createPostInteractionDto.type) {
+      case ReactionType.LIKE:
         updatedCounts.likeCount = (postDetails.likeCount || 0) + 1;
         break;
-      case 'celebrate':
-        updatedCounts.colabratorCount = (postDetails.collaboratorCount || 0) + 1;
+      case ReactionType.COLLABORATE:
+        updatedCounts.collaboratorCount =
+          (postDetails.collaboratorCount || 0) + 1;
         break;
-      case 'support':
+      case ReactionType.SUPPORT:
         updatedCounts.supportCount = (postDetails.supportCount || 0) + 1;
         break;
-      case 'insightful':
+      case ReactionType.INSIGHTFUL:
         updatedCounts.insightfulCount = (postDetails.insightfulCount || 0) + 1;
         break;
       default:
-        break;  
+        break;
     }
-   await this.postService.updateIntractionCount(postId, updatedCounts);
-    return new ApiSuccessResponse(HttpStatus.CREATED, true, 'Interaction added successfully', saveIntraction);
+
+    await this.postService.updateIntractionCount(postId, updatedCounts);
+
+    return new ApiSuccessResponse(
+      HttpStatus.CREATED,
+      true,
+      'Interaction added successfully',
+      saveIntraction,
+    );
   }
 
 
@@ -63,8 +88,8 @@ export class PostInteractionController {
   async getAllInteractions(@Param('postId') postId: string) {
     const postDetails = await this.postService.findOne(postId);
     if (!postDetails) { return new ApiErrorResponse(HttpStatus.NOT_FOUND, false, 'Post not found ') }
-const postIntractionDetails=await this.postInteractionService.findAlldata(postId)
-return new ApiSuccessResponse(HttpStatus.OK,true,'Intraction details ',postIntractionDetails)
+const postIntractionDetails=await this.postInteractionService.getPostDetailsWithInteractionsGrouped(postId)
+ return new ApiSuccessResponse(HttpStatus.OK,true,'Intraction details ',postIntractionDetails)
 
 
   }

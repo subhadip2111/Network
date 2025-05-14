@@ -2,16 +2,22 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePostInteractionDto } from './dto/create-post-interaction.dto';
 import { UpdatePostInteractionDto } from './dto/update-post-interaction.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PostInteraction } from './entities/post-interaction.entity';
-import { Repository } from 'typeorm';
+import { InteractionType, PostInteraction } from './entities/post-interaction.entity';
+import { In, Not, Repository } from 'typeorm';
+import { Post, PostType } from 'src/post/entities/post.entity';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class PostInteractionService {
-  constructor(@InjectRepository(PostInteraction) private readonly postIntractionRepo: Repository<PostInteraction>) {
+  constructor(@InjectRepository(PostInteraction) private readonly postIntractionRepo: Repository<PostInteraction>,
+@InjectRepository(Post) private readonly postrepo: Repository<Post>
+
+) {
 
   }
-  async create(createPostInteractionDto: CreatePostInteractionDto) {
-    return 'This action adds a new postInteraction';
+  async create(createPostInteractionDto: any) {
+    console.log(createPostInteractionDto  )
+   return await  this.postIntractionRepo.save(createPostInteractionDto)
   }
 
   async findAll(postId: string) {
@@ -27,7 +33,6 @@ export class PostInteractionService {
       .groupBy('postInteractions.type, user.id, user.fullName')
       .getRawMany();
   
-    // Format result as: { like: [users], support: [users], ... }
     const formatted = userListByType.reduce((acc, curr) => {
       const { type, userId, username } = curr;
   
@@ -57,8 +62,8 @@ export class PostInteractionService {
         'postInteraction.type AS interactionType',
         'COUNT(postInteraction.id) AS totalInteractions',
       ])
-      .groupBy('postInteraction.type') // Group by interaction type
-      .getRawMany(); // Get raw results
+      .groupBy('postInteraction.type') 
+      .getRawMany(); 
   
     return interactionSummary;
   }
@@ -100,72 +105,107 @@ export class PostInteractionService {
     return `This action removes a #${id} postInteraction`;
   }
 
-  async findAlldata(postId: string) {
-    // Step 1: Get grouped interaction data by type and user
-    const [result] = await this.postIntractionRepo
-      .createQueryBuilder('postInteractions')
-      .leftJoin('postInteractions.user', 'user')
-      .select([
-        'postInteractions.type AS type',
-        'user.id AS userId',
-        'user.fullName AS username',
-        'COUNT(postInteractions.id) AS count'
-      ])
-      .where('postInteractions.postId = :postId', { postId })
-      .groupBy('postInteractions.type, user.id, user.fullName')
-      .getRawMany()
-      .then(data => [data]); // mimic [result, count] structure for uniformity
-  
-    // Step 2: Format result
-    const formattedSummary = result.reduce((acc, item) => {
-      const { type, userId, username, count } = item;
-  
-      if (!acc[type]) {
-        acc[type] = {
-          count: 0,
-          users: [],
-        };
+
+  async getPostDetailsWithInteractionsGrouped(postId: string): Promise<any> {
+    const post = await this.postrepo.findOne({ where: { id: postId } });
+    if (!post) {return null}
+    const interactions = await this.postIntractionRepo
+      .createQueryBuilder('pi')
+      .leftJoin('pi.user', 'u')
+      .where('pi.postId = :postId', { postId })
+      .select(['pi.type', 'u.id', 'u.fullName'])
+      .getMany();
+
+    const groupedInteractions: { [key in InteractionType]?: User[] } = {};
+    interactions.forEach((interaction) => {
+      if (!groupedInteractions[interaction.type]) {
+        groupedInteractions[interaction.type] = [];
       }
-  
-      acc[type].count += parseInt(count, 10);
-      acc[type].users.push({ id: userId, username });
-  
-      return acc;
-    }, {} as Record<string, { count: number; users: { id: string; username: string }[] }>);
-  
-    // Step 3: Get stored counts from the post table
-    const post = await this.postIntractionRepo.findOne({ where: { postId: postId } });
-  
-    if (!post) {
-      throw new NotFoundException('Post not found');
-    }
-  
-    // Step 4: Inject counts from post table
-    const interactionTypes = ['like', 'support', 'insightful', 'colabrator'];
-    interactionTypes.forEach((type) => {
-      const postCount = post[`${type}Count`] || 0;
-      if (formattedSummary[type]) {
-        formattedSummary[type].count = postCount;
-      } else {
-        formattedSummary[type] = {
-          count: postCount,
-          users: [],
-        };
-      }
+      groupedInteractions[interaction.type].push({
+        id: interaction.user.id,
+        username: interaction.user.fullName,
+      } as any); 
     });
-  
+
     return {
-      postId,
-      interactionSummary: formattedSummary,
+      ...post,
+      interactionsByType: groupedInteractions,
     };
   }
+
+
+// for now I wanted my feed comes based on my activity just think as  a user  what ever post Or video I like or give a intraction I need to fetch that similiar kind of 
+// data as  a percent ratio.
+// the types of post I have Idea ,resource,query ,prodeuct demo.in starting all are equal phase 25 %
+// if i  increase to intarction on a post that postType value increase .and then in my feeds its possibity increas .
+// In feture I need to Implement redis for user search keyword and user mind and his Interested key .intregate ai model to personalize post or make a better env
+
+
+async myfeedsData(userId: string, limit: number = 10): Promise<Post[]> {
+  const recentInteractions = await this.postIntractionRepo.find({
+    where: { userId },
+    relations: ['post'],
+    order: { createdAt: 'DESC' },
+    take: 100, 
+  });
+
+  const typeWeights: Record<PostType, number> = {
+    [PostType.IDEA]: 0.25,
+    [PostType.QUERY]: 0.25,
+    [PostType.RESOURCES]: 0.25,
+    [PostType.PRODUCT_DEMO]: 0.25,
+  };
+
+  const recentTypeCounts: Record<PostType, number> = {
+    [PostType.IDEA]: 0,
+    [PostType.QUERY]: 0,
+    [PostType.RESOURCES]: 0,
+    [PostType.PRODUCT_DEMO]: 0,
+  };
+
+  recentInteractions.forEach((interaction) => {
+    if (interaction.post && recentTypeCounts[interaction.post.type] !== undefined) {
+      recentTypeCounts[interaction.post.type]++;
+    }
+  });
+
+  const totalRecentInteractions = recentInteractions.length;
+  if (totalRecentInteractions > 0) {
+    for (const type in recentTypeCounts) {
+      if (recentTypeCounts.hasOwnProperty(type)) {
+        typeWeights[type as PostType] = recentTypeCounts[type as PostType] / totalRecentInteractions;
+      }
+    }
+  }
+
+  const interactedPostIds = recentInteractions.map((interaction) => interaction.postId);
+  const allNewPosts = await this.postrepo.find({
+    where: { id: Not(In(interactedPostIds)) },
+    relations: ['user'],
+    order: { createdAt: 'DESC' },
+    take: 1000, 
+  });
+
+  const feed: Post[] = [];
+  const maxAttempts = allNewPosts.length * 2;
+  let attempts = 0;
+
+  while (feed.length < limit && attempts < maxAttempts && allNewPosts.length > 0) {
+    attempts++;
+    const randomIndex = Math.floor(Math.random() * allNewPosts.length);
+    const potentialPost = allNewPosts[randomIndex];
+    const randomWeight = Math.random();
+
+    if (randomWeight < typeWeights[potentialPost.type]) {
+      feed.push(potentialPost);
+      allNewPosts.splice(randomIndex, 1);
+    }
+  }
+  while (feed.length < limit && allNewPosts.length > 0) {
+    feed.push(allNewPosts.shift()!);
+  }
+  return feed;
+}
   
-
-
-
-
-
-
-
 
 }
