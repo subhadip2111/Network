@@ -1,5 +1,7 @@
 
+import { group } from 'console';
 import { AssessmentParticipant } from 'src/assesment-participant/entities/assesment-participant.entity';
+import { Group } from 'src/groups/entities/group.entity';
 import { PostInteraction } from 'src/post-interaction/entities/post-interaction.entity';
 import { Post } from 'src/post/entities/post.entity';
 import { UserType } from 'src/utils/enum';
@@ -10,6 +12,7 @@ import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
+  ManyToMany,
 } from 'typeorm';
 
 @Entity()
@@ -21,6 +24,9 @@ export class User {
   email: string;
   @Column({ nullable: true })
   age: number;
+
+  @Column({default:0 })
+  referalPoint: number;
 
   @Column({ nullable: true })
   password: string;
@@ -54,6 +60,10 @@ export class User {
 
   @OneToMany(() => PostInteraction, (interaction) => interaction.user)
   interactions: PostInteraction[];
+
+
+  @ManyToMany(()=>Group,(group)=>group.members)
+  groups:Group[]
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 }

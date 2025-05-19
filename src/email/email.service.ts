@@ -181,6 +181,56 @@ export class EmailService {
     });
   }
   
-
+  async sendProjectCollabRequestEmail(
+    to: string,              // Project owner's email
+    fromUser: {
+      name: string;
+      email: string;
+      skills: string[];
+      message: string;
+    },
+    projectId: string
+  ) {
+    const htmlMessage = `
+      <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; text-align: center;">
+        <div style="max-width: 600px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); margin: auto;">
+          
+          <h2 style="color: #4CAF50;">🤝 New Collaboration Interest!</h2>
+  
+          <p style="font-size: 16px; color: #333;">
+            <strong>${fromUser.name}</strong> (<a href="mailto:${fromUser.email}" style="color: #4CAF50;">${fromUser.email}</a>) 
+            is interested in collaborating with you on your project (ID: <strong>${projectId}</strong>).
+          </p>
+  
+          <h3 style="color: #2c3e50; margin-top: 20px;">💡 Message from ${fromUser.name}</h3>
+          <p style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; color: #444;">
+            "${fromUser.message}"
+          </p>
+  
+          <h4 style="margin-top: 25px; color: #4CAF50;">🛠️ Skills:</h4>
+          <ul style="list-style-type: none; padding: 0; color: #555;">
+            ${fromUser.skills.map(skill => `<li>• ${skill}</li>`).join('')}
+          </ul>
+  
+          <a href="https://your-platform.com/project/${projectId}" 
+            style="display: inline-block; margin-top: 30px; background-color: #4CAF50; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+            View Project
+          </a>
+  
+          <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
+          <p style="font-size: 14px; color: #333;">You received this email through the Network collaboration feature.</p>
+          <p style="font-size: 14px; color: #4CAF50;">– The Network Team</p>
+        </div>
+      </div>
+    `;
+  
+    await this.mailService.sendMail({
+      from: process.env.NODE_MAILER_USER,
+      to,
+      subject: `${fromUser.name} wants to collaborate on your project`,
+      html: htmlMessage,
+    });
+  }
+  
   
 }

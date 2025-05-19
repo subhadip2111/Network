@@ -18,6 +18,12 @@ import { CompanyModule } from './company/company.module';
 import { CompanyAssesmentModule } from './company-assesment/company-assesment.module';
 import { AssesmentParticipantModule } from './assesment-participant/assesment-participant.module';
 import { PostInteractionModule } from './post-interaction/post-interaction.module';
+import { UsersCollabrateModule } from './users-collabrate/users-collabrate.module';
+import { GroupsModule } from './groups/groups.module';
+import { MessagesModule } from './messages/messages.module';
+import { ChatGateway } from './chat/chat.gateway';
+import { ChatModule } from './chat/chat.module';
+
 
 
 @Module({
@@ -53,6 +59,11 @@ import { PostInteractionModule } from './post-interaction/post-interaction.modul
     CompanyAssesmentModule,
     AssesmentParticipantModule,
     PostInteractionModule,
+    UsersCollabrateModule,
+    GroupsModule,
+    MessagesModule,
+    ChatModule
+ 
  
       
   ],
@@ -60,6 +71,6 @@ import { PostInteractionModule } from './post-interaction/post-interaction.modul
   providers: [AppService,{
     provide: APP_GUARD,
     useClass: CustomThrottlerGuard, 
-  },]
+  }, ChatGateway,]
 })
 export class AppModule {}
