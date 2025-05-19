@@ -44,7 +44,6 @@ export class UsersCollabrateController {
 
   }
 
-
   @ApiOperation({ summary: 'Update collabration request' })
   @ApiBearerAuth('access-token')
   @ApiSecurity('x-api-key')
