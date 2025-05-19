@@ -7,6 +7,7 @@ import { JwtAuthGuard } from 'src/auth/gaurds/jwt.authGaurds';
 import { PostService } from 'src/post/post.service';
 import { ApiErrorResponse, ApiSuccessResponse } from 'src/utils/ApiSuccesResponse';
 import { InteractionType } from './entities/post-interaction.entity';
+import { UsersCollabrateService } from 'src/users-collabrate/users-collabrate.service';
 
 
 
@@ -14,8 +15,8 @@ import { InteractionType } from './entities/post-interaction.entity';
 @Controller('post-interactions')
 export class PostInteractionController {
   constructor(private readonly postInteractionService: PostInteractionService,
-    private readonly postService: PostService
-
+    private readonly postService: PostService,
+    private readonly usesCollabratorService:UsersCollabrateService
 
   ) { }
 
@@ -57,6 +58,13 @@ export class PostInteractionController {
       case ReactionType.COLLABORATE:
         updatedCounts.collaboratorCount =
           (postDetails.collaboratorCount || 0) + 1;
+          const collabReq={
+            userId:postDetails.userId,
+            colabratorId:req.user.id,
+            postId:postDetails.id
+
+          }
+          await this.usesCollabratorService.create(collabReq)
         break;
       case ReactionType.SUPPORT:
         updatedCounts.supportCount = (postDetails.supportCount || 0) + 1;
