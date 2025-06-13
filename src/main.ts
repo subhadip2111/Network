@@ -19,7 +19,7 @@ async function bootstrap() {
         name: 'Authorization',
         in: 'header',
       },
-      'access-token', // MUST match @ApiBearerAuth('access-token')
+      'access-token', 
     )
     .addApiKey(
       {

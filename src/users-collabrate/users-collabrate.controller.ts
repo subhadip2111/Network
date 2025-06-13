@@ -11,18 +11,6 @@ import { ApiSuccessResponse } from 'src/utils/ApiSuccesResponse';
 export class UsersCollabrateController {
   constructor(private readonly usersCollabrateService: UsersCollabrateService) { }
 
-  // @ApiOperation({ summary: 'send collabration  request ' })
-  // @ApiBearerAuth('access-token')
-  // @ApiSecurity('x-api-key')
-  // @ApiBody({ type: CreateUsersCollabrateDto, description: '', required: true })
-  // @UseGuards(JwtAuthGuard)
-  // @Post()
-  // async create(@Body() createUsersCollabrateDto: CreateUsersCollabrateDto) {
-  //   // send the user that someone send a collabrate request via email or push notification
-  //   const collabrationRequest = await this.usersCollabrateService.create(createUsersCollabrateDto);
-  //   return new ApiSuccessResponse(HttpStatus.CREATED, true, 'Collabration request sent successfully', collabrationRequest)
-  // }
-
   @ApiOperation({ summary: 'view all collabration request' })
   @ApiBearerAuth('access-token')
   @ApiSecurity('x-api-key')

@@ -1,4 +1,3 @@
-// /home/subhadip/Personal/network-backend/src/utils/ApiSuccessResponse.ts
 
 export class ApiSuccessResponse<T> {
     statusCode: number;

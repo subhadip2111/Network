@@ -182,7 +182,7 @@ export class EmailService {
   }
   
   async sendProjectCollabRequestEmail(
-    to: string,              // Project owner's email
+    to: string,             
     fromUser: {
       name: string;
       email: string;
