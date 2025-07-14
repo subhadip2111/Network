@@ -6,6 +6,11 @@ export class UpdateUserDto {
   @IsString()
   fullName?: string;
 
+
+  @IsOptional()
+  @IsString()
+  profilePicture?: string;
+
   @IsOptional()
   @IsArray()
   @IsString({ each: true }) 
