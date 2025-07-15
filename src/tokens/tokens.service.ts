@@ -18,25 +18,22 @@ export class TokensService {
       ownerType,
     };
   
-    // Generate Access Token
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.secret, 
       expiresIn: '30d',
     });
   
-    // Generate Refresh Token
     const refreshToken = this.jwtService.sign(payload, {
       secret: process.env.secret,
       expiresIn: '90d',
     });
   
-    // Save Refresh Token in Database
     const newToken = this.tokenRepo.create({
       ownerId: userOrCompany.id,
-      ownerType, // <--- this line is added
+      ownerType, 
       type: TokenType.REFRESH,
       token: refreshToken,
-      expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days expiry
+      expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), 
     });
   
     await this.tokenRepo.save(newToken);

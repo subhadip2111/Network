@@ -40,7 +40,7 @@ export class CloudinaryService {
         {
           resource_type: 'raw',
           folder: 'uploads/files',
-          public_id: file.originalname.split('.')[0], // optional: remove extension
+          public_id: file.originalname.split('.')[0], 
         },
         (error, result) => {
           if (error) return reject(error);
