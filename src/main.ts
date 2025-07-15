@@ -38,7 +38,8 @@ async function bootstrap() {
 
   app.use(new ApiKeyMiddleware().use);
   app.useGlobalPipes(new ValidationPipe());
-
   await app.listen(process.env.PORT || 3000);
+  console.log('application running on port',process.env.PORT)
+
 }
 bootstrap();
