@@ -40,7 +40,7 @@ export class Company {
   @Column({ nullable: true })
   zipCode: string;
   @Column('text', { array: true, nullable: true })
-  techStack: string[]; // Example: ['Node.js', 'React', 'PostgreSQL']
+  techStack: string[];
 
   @Column({
     type: 'enum',
@@ -82,7 +82,6 @@ export class Company {
   @Column({ nullable: true })
   cinNumber?: string;
 
-  // Email & Password for company account
   @Column({ unique: true })
   email: string;
 
@@ -95,7 +94,6 @@ export class Company {
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  // Hash password before insert or update
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword(): Promise<void> {

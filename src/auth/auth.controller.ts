@@ -67,7 +67,9 @@ export class AuthController {
       HttpStatus.OK,
       true,
       'otp verified SuccessFully',
-      { ...verifyUser, accessToken, refreshToken },
+      { ...verifyUser},
+      accessToken,
+      refreshToken,
     );
   }
 

@@ -28,10 +28,10 @@ import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [ConfigModule.forRoot(),
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 3,
-    }]),
+    // ThrottlerModule.forRoot([{
+    //   ttl: 60000,
+    //   limit: 3,
+    // }]),
     TypeOrmModule.forRoot({
       type: "postgres", 
       host: process.env.DB_HOST,
@@ -68,9 +68,6 @@ import { ChatModule } from './chat/chat.module';
       
   ],
   controllers: [AppController],
-  providers: [AppService,{
-    provide: APP_GUARD,
-    useClass: CustomThrottlerGuard, 
-  }, ChatGateway,]
+  providers: [AppService, ChatGateway,]
 })
 export class AppModule {}

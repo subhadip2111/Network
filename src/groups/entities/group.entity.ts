@@ -13,7 +13,6 @@ import {
     ManyToOne,
     JoinColumn,
   } from 'typeorm';
-//   import { Message } from './message.entity';
 
   @Entity('groups')
   export class Group {

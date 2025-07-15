@@ -1,16 +1,18 @@
-// /home/subhadip/Personal/network-backend/src/utils/ApiSuccessResponse.ts
 
 export class ApiSuccessResponse<T> {
     statusCode: number;
     success: boolean;
     message: string;
     data: T;
-
-    constructor(statusCode: number, success: boolean, message: string, data: T) {
+    accessToken?: string;
+    refreshToken?: string;
+    constructor(statusCode: number, success: boolean, message: string, data: T, accessToken?: string, refreshToken?: string) {
         this.statusCode = statusCode;
         this.success = success;
         this.message = message;
         this.data = data;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 }
 

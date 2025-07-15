@@ -1,4 +1,3 @@
-// utils/dateFormatter.ts
 
 export function formatToIST(dateTime: string): string {
     try {
@@ -12,7 +11,7 @@ export function formatToIST(dateTime: string): string {
         hour: "numeric",
         minute: "2-digit",
         hour12: true,
-        timeZoneName: "short" // returns "IST"
+        timeZoneName: "short" 
       });
       return istFormatted;
     } catch (error) {

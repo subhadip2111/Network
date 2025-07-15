@@ -21,6 +21,13 @@ export class VerifyOtp {
     example: '244224',
     required: true,
   })
+
+  @ApiProperty({
+    example: '244224',
+    description: 'The OTP code sent to the user',
+    required: true,
+  })
+  @IsString()
   otp: string;
 }
 

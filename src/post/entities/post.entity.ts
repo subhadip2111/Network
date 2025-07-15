@@ -28,11 +28,11 @@ export class Post {
   content: string;
 
   @ManyToOne(() => User, (user) => user.posts, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'userId' }) // Explicitly define the foreign key column
+  @JoinColumn({ name: 'userId' }) 
   user: User;
 
-  @Column({ type: 'uuid' }) // Explicitly define the userId column
-  userId: string; // This will be stored in the database
+  @Column({ type: 'uuid' }) 
+  userId: string; 
   @Column({
     type: 'enum',
     enum: PostType,
