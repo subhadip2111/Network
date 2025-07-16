@@ -17,7 +17,7 @@ export class PostController {
   @ApiOperation({ summary: 'Create a new post' })
   @ApiBearerAuth('access-token')
   @ApiSecurity('x-api-key')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)  
   @Post('create')
   async create(@Request() req: any, @Body() createPostDto: CreatePostDto) {
     const user = req.user

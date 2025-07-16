@@ -33,4 +33,35 @@ export class CreatePostDto {
   @IsOptional()
   @IsUrl()
   videoUrl?: string | null;
+
+  @ApiPropertyOptional({ description: 'React js ', type: String, nullable: true })
+  @IsOptional()
+  tags?: string | null;
+
+
+  @ApiPropertyOptional({ description: 'any resource url ', type: String, nullable: true })
+  @IsOptional()
+  resourceType: string
+
+
+  @ApiPropertyOptional({ description: 'any demo  url ', type: String, nullable: true })
+  @IsOptional()
+  demoUrl: string
+
+  @ApiPropertyOptional({ description: 'React js ,Node.js', type: String, nullable: true })
+  techStack: string | null;
+
+  @ApiPropertyOptional({ description: 'any resource url ', type: String, nullable: true })
+  @IsOptional()
+  resourceUrls: string[]
+  @ApiPropertyOptional({ description: 'any resource url ', type: String, nullable: true })
+  @IsOptional()
+
+  urgency: string
+  @ApiPropertyOptional({ description: 'any resource url ', type: String, nullable: true })
+
+  @IsOptional()
+  seeking: string
+
+
 }
