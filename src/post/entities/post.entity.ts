@@ -43,7 +43,7 @@ export class Post {
   @Column({ type: 'text', default: null })
   techStack: string
 
-   @Column('text', { array: true, nullable: true, default: () => "'{}'" })
+  @Column('text', { array: true, nullable: true, default: () => "'{}'" })
   resourceUrls: string[];
 
   @Column({ type: 'text', default: null })
@@ -69,8 +69,8 @@ export class Post {
   @Column({ type: 'boolean', default: false })
   isVerified: boolean;
 
-@Column("text", { array: true, nullable: true, default: () => "'{}'" })
-imageUrls: string[];
+  @Column("text", { array: true, nullable: true, default: () => "'{}'" })
+  imageUrls: string[];
 
   @Column({ type: 'text', nullable: true })
   videoUrl: string;

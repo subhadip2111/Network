@@ -17,7 +17,7 @@ export class PostController {
   @ApiOperation({ summary: 'Create a new post' })
   @ApiBearerAuth('access-token')
   @ApiSecurity('x-api-key')
-  @UseGuards(JwtAuthGuard)  
+  @UseGuards(JwtAuthGuard)
   @Post('create')
   async create(@Request() req: any, @Body() createPostDto: CreatePostDto) {
     const user = req.user
@@ -49,7 +49,7 @@ export class PostController {
   async uploadVideo(@UploadedFile() file: Express.Multer.File) {
     try {
       const result = await this.cloudinaryService.uploadVideo(file);
-      return { url: result.secure_url }; 
+      return { url: result.secure_url };
     } catch (error) {
       return { error: error.message };
     }
@@ -67,13 +67,36 @@ export class PostController {
   }
 
 
+
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get user Feeds ' })
+  @Get('/feeds')
+
+  async getMyFeeds(@Request() req: any, @Query() query: QueryPostDto) {
+    const userInfo = req.user;
+    const { feeds,
+      total,
+      page,
+      pageSize,
+      totalPages } = await this.postService.feeds(userInfo, query);
+    return new ApiSuccessResponse(HttpStatus.OK, true, 'Fedds data get successfuly', {
+      feeds,
+      total,
+      page,
+      pageSize,
+      totalPages
+    })
+  }
+
+
+
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get a post details by Id ' })
   @ApiParam({ name: 'id', description: 'Post ID' })
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const postDetails = await this.postService.findOne(id);
-    if (!postDetails) {return new ApiSuccessResponse(HttpStatus.NOT_FOUND, false, 'Post not found', null)}
+    if (!postDetails) { return new ApiSuccessResponse(HttpStatus.NOT_FOUND, false, 'Post not found', null) }
     return new ApiSuccessResponse(HttpStatus.OK, true, 'Post details retrive successfully', postDetails)
   }
 

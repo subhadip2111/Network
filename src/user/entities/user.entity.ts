@@ -37,6 +37,10 @@ export class User {
   @Column({ nullable: true })
   profilePicture: string;
 
+
+  @Column({ nullable: true })
+  interest: string;
+  
   @Column({ type: 'enum', enum: UserType, default: UserType.STUDENT })
   role: string;
 
