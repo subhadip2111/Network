@@ -10,7 +10,7 @@ import { QueryPostDto } from './dto/post-query.dto';
 @Injectable()
 export class PostService {
   constructor(@InjectRepository(Post) private readonly postRepository: Repository<Post>
-) { }
+  ) { }
   async create(createPostDto: CreatePostDto) {
     const post = Object.assign(createPostDto)
     await this.postRepository.save(post);
@@ -22,11 +22,11 @@ export class PostService {
   async findOne(postId: string) {
     try {
       const post = await this.postRepository.findOne({
-        where: { id:postId }
+        where: { id: postId }
       });
       if (!post) {
 
-         throw new NotFoundException(`Post with ID ${postId} not found`);
+        throw new NotFoundException(`Post with ID ${postId} not found`);
       }
 
       return post;
@@ -63,7 +63,6 @@ export class PostService {
 
   async getUserAllPosts(userId: string, query: QueryPostDto) {
     let { type, keyword, page, pageSize } = query;
-
     const queryBuilder = this.postRepository.createQueryBuilder('post')
       .where('post.userId = :userId', { userId });
 
@@ -78,11 +77,11 @@ export class PostService {
       );
     }
 
-    const skip = (page - 1) * pageSize;
+    const skip = (+page - 1) * +pageSize;
 
     const [posts, total] = await queryBuilder
       .skip(skip)
-      .take(pageSize)
+      .take(+pageSize)
       .getManyAndCount();
 
     return {
@@ -96,71 +95,34 @@ export class PostService {
   }
 
 async feeds(user: any, query: QueryPostDto) {
-  const { keyword, page = 1, pageSize = 10 } = query;
+  const { page = 1, pageSize = 10 } = query;
 
-  const queryBuilder = this.postRepository.createQueryBuilder('post');
+  const [feeds, total] = await this.postRepository.findAndCount({
+    relations: ['user'], 
+    order: {
+      createdAt: 'DESC',
+    },
+    skip: (+page - 1) * +pageSize,
+    take: +pageSize,
+  });
 
-  if (keyword) {
-    queryBuilder.andWhere(
-      `(post.title ILIKE :keyword 
-        OR post.content ILIKE :keyword 
-        OR post.techStack ILIKE :keyword 
-        OR post.tags ILIKE :keyword)`,
-      { keyword: `%${keyword}%` }
-    );
-  }
-
-  if (user.skills?.length) {
-    queryBuilder.andWhere(
-      new Brackets((qb) => {
-        user.skills.forEach((skill, index) => {
-          qb.orWhere(`post.techStack ILIKE :skill${index}`, {
-            [`skill${index}`]: `%${skill}%`,
-          });
-        });
-      })
-    );
-  }
-
-  if (user.bio) {
-    const bioKeywords = user.bio.split(/\s+/).slice(0, 5); 
-    queryBuilder.andWhere(
-      new Brackets((qb) => {
-        bioKeywords.forEach((word, index) => {
-          qb.orWhere(`post.content ILIKE :bioWord${index}`, {
-            [`bioWord${index}`]: `%${word}%`,
-          });
-        });
-      })
-    );
-  }
-
-  if (user.interest) {
-    queryBuilder.andWhere(
-      `(post.title ILIKE :interest OR post.tags ILIKE :interest)`,
-      { interest: `%${user.interest}%` }
-    );
-  }
-
-  if (user.role === 'student') {
-    queryBuilder.andWhere(`post.type IN (:...types)`, {
-      types: ['idea', 'query', 'resources'],
-    });
-  }
-  const skip = (page - 1) * pageSize;
-  queryBuilder.skip(skip).take(pageSize);
-  const [feeds, total] = await queryBuilder.getManyAndCount();
   return {
     feeds,
     total,
     page,
     pageSize,
-    totalPages: Math.ceil(total / pageSize),
+    totalPages: Math.ceil(total / +pageSize),
   };
 }
 
 
- }
+
+
+
+
+
+
+}
 
 
 

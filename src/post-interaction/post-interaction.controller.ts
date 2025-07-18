@@ -32,6 +32,7 @@ export class PostInteractionController {
     @Param('postId') postId: string,
     @Request() req: any,
   ) {
+    console.log("createPostInteractionDto",createPostInteractionDto)
     const postDetails = await this.postService.findOne(postId);
     if (!postDetails) {
       return new ApiErrorResponse(HttpStatus.NOT_FOUND, false, 'Post not found ');
@@ -76,13 +77,13 @@ export class PostInteractionController {
         break;
     }
 
-    await this.postService.updateIntractionCount(postId, updatedCounts);
+ const updatePost=   await this.postService.updateIntractionCount(postId, updatedCounts);
 
     return new ApiSuccessResponse(
       HttpStatus.CREATED,
       true,
       'Interaction added successfully',
-      saveIntraction,
+      updatePost,
     );
   }
 

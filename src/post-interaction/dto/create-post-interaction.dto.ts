@@ -7,9 +7,10 @@ export enum ReactionType {
   CELEBRATE = 'celebrate',
   SUPPORT = 'support',
   INSIGHTFUL = 'insightful',
-  COLLABORATE='colabrate'
+  COLLABORATE=' '
 }
 export class CreatePostInteractionDto {
+
   @IsOptional()
   @ApiProperty()
   postId: string;
