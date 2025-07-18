@@ -24,14 +24,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from 'src/utils/cloudinary/uploads.service';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { PostInteractionService } from 'src/post-interaction/post-interaction.service';
-@ApiTags('User') 
+@ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly cloudinaryService: CloudinaryService,
-    private readonly postIntractionService:PostInteractionService
-  ) {}
+    private readonly postIntractionService: PostInteractionService
+  ) { }
 
   @Get()
   findAll() {
@@ -63,7 +63,13 @@ export class UserController {
     if (req.user.id !== id) {
       throw new HttpException('Access Denied!', HttpStatus.FORBIDDEN);
     }
-    return await this.userService.update(req.user.id, updateUserDto);
+    const updatedProfile = await this.userService.update(req.user.id, updateUserDto);
+    return new ApiSuccessResponse(
+      HttpStatus.OK,
+      true,
+      'Profile Details Updated  Successfully',
+      updatedProfile,
+    );
   }
 
   @Post('/image/upload')
@@ -79,12 +85,12 @@ export class UserController {
   }
 
   @ApiOperation({ summary: 'My feeds' })
-  @ApiParam({name:"userid",description:"give the userId in params",required:true})
+  @ApiParam({ name: "userid", description: "give the userId in params", required: true })
   @UseGuards(JwtAuthGuard)
   @Get('my-feeds/:userId')
-  async getMyFeedsdata(@Param('userId')userId:string,@Query()query:any){
-    const myfeeds=await this.postIntractionService.myfeedsData(userId,query.limit)
-    return new ApiSuccessResponse(HttpStatus.OK,true,'my feed data',myfeeds)
+  async getMyFeedsdata(@Param('userId') userId: string, @Query() query: any) {
+    const myfeeds = await this.postIntractionService.myfeedsData(userId, query.limit)
+    return new ApiSuccessResponse(HttpStatus.OK, true, 'my feed data', myfeeds)
 
   }
 }

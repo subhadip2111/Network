@@ -1,7 +1,7 @@
 import { IsOptional, IsString, IsArray, IsUrl, IsNumber } from 'class-validator';
 
 export class UpdateUserDto {
-  
+
   @IsOptional()
   @IsString()
   fullName?: string;
@@ -13,7 +13,7 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsArray()
-  @IsString({ each: true }) 
+  @IsString({ each: true })
   skills?: string[];
 
   @IsOptional()
@@ -22,8 +22,12 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsNumber()
-age:number
+  age: number
   @IsOptional()
   @IsUrl()
-  githubProfile?: string;
+  githubProfile?: string; 
+  
+    @IsOptional()
+  @IsString()
+  interest:string
 }
