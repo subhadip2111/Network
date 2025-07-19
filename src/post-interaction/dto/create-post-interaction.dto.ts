@@ -7,7 +7,7 @@ export enum ReactionType {
   CELEBRATE = 'celebrate',
   SUPPORT = 'support',
   INSIGHTFUL = 'insightful',
-  COLLABORATE=' '
+  COLLABORATE='colaborate'
 }
 export class CreatePostInteractionDto {
 

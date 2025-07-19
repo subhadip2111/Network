@@ -16,7 +16,7 @@ import { UsersCollabrateService } from 'src/users-collabrate/users-collabrate.se
 export class PostInteractionController {
   constructor(private readonly postInteractionService: PostInteractionService,
     private readonly postService: PostService,
-    private readonly usesCollabratorService:UsersCollabrateService
+    private readonly usesCollabratorService: UsersCollabrateService
 
   ) { }
 
@@ -24,7 +24,7 @@ export class PostInteractionController {
   @ApiBearerAuth('access-token')
   @ApiSecurity('x-api-key')
   @ApiParam({ name: 'postId', description: 'ID of the post to interact with', required: true })
-  @ApiBody({type:CreatePostInteractionDto,description:'',required:true})
+  @ApiBody({ type: CreatePostInteractionDto, description: '', required: true })
   @UseGuards(JwtAuthGuard)
   @Post('/:postId')
   async createInteraction(
@@ -32,7 +32,7 @@ export class PostInteractionController {
     @Param('postId') postId: string,
     @Request() req: any,
   ) {
-    console.log("createPostInteractionDto",createPostInteractionDto)
+    console.log("createPostInteractionDto", createPostInteractionDto)
     const postDetails = await this.postService.findOne(postId);
     if (!postDetails) {
       return new ApiErrorResponse(HttpStatus.NOT_FOUND, false, 'Post not found ');
@@ -41,13 +41,8 @@ export class PostInteractionController {
     createPostInteractionDto.postId = postId;
     createPostInteractionDto.userId = req.user.id;
 
-    const saveIntraction = await this.postInteractionService.create(
-      createPostInteractionDto,
-    );
-
-    const updatedCounts: Partial<
-      Record<
-        'likeCount' | 'collaboratorCount' | 'supportCount' | 'insightfulCount',
+     await this.postInteractionService.create(createPostInteractionDto);
+    const updatedCounts: Partial< Record< 'likeCount' | 'collaboratorCount' | 'supportCount' | 'insightfulCount' | 'celebrateCount',
         number
       >
     > = {};
@@ -59,13 +54,13 @@ export class PostInteractionController {
       case ReactionType.COLLABORATE:
         updatedCounts.collaboratorCount =
           (postDetails.collaboratorCount || 0) + 1;
-          const collabReq={
-            userId:postDetails.userId,
-            colabratorId:req.user.id,
-            postId:postDetails.id
+        const collabReq = {
+          userId: postDetails.userId,
+          colabratorId: req.user.id,
+          postId: postDetails.id
 
-          }
-          await this.usesCollabratorService.create(collabReq)
+        }
+        await this.usesCollabratorService.create(collabReq)
         break;
       case ReactionType.SUPPORT:
         updatedCounts.supportCount = (postDetails.supportCount || 0) + 1;
@@ -73,12 +68,16 @@ export class PostInteractionController {
       case ReactionType.INSIGHTFUL:
         updatedCounts.insightfulCount = (postDetails.insightfulCount || 0) + 1;
         break;
+      case ReactionType.CELEBRATE:
+        updatedCounts.celebrateCount = (postDetails.celebrateCount || 0) + 1;
+        break;
+
       default:
         break;
     }
 
- const updatePost=   await this.postService.updateIntractionCount(postId, updatedCounts);
-
+    const updatePost = await this.postService.updateIntractionCount(postId, updatedCounts);
+console.log(updatePost)
     return new ApiSuccessResponse(
       HttpStatus.CREATED,
       true,
@@ -97,8 +96,8 @@ export class PostInteractionController {
   async getAllInteractions(@Param('postId') postId: string) {
     const postDetails = await this.postService.findOne(postId);
     if (!postDetails) { return new ApiErrorResponse(HttpStatus.NOT_FOUND, false, 'Post not found ') }
-const postIntractionDetails=await this.postInteractionService.getPostDetailsWithInteractionsGrouped(postId)
- return new ApiSuccessResponse(HttpStatus.OK,true,'Intraction details ',postIntractionDetails)
+    const postIntractionDetails = await this.postInteractionService.getPostDetailsWithInteractionsGrouped(postId)
+    return new ApiSuccessResponse(HttpStatus.OK, true, 'Intraction details ', postIntractionDetails)
 
 
   }

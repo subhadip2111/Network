@@ -8,9 +8,12 @@ import {
     JoinColumn,
     CreateDateColumn,
 } from 'typeorm';
+import { ReactionType } from '../dto/create-post-interaction.dto';
 export enum InteractionType {
     LIKE = 'like',
     LOVE = 'love',
+    CELEBRATE = 'celebrate',
+
     COLLABORATE = 'collaborate',
 }
 
@@ -26,8 +29,8 @@ export class PostInteraction {
     @Column()
     userId: string;
 
-    @Column({ type: 'enum', enum: InteractionType })
-    type: InteractionType;
+    @Column({ type: 'enum', enum: ReactionType })
+    type: ReactionType;
 
     @ManyToOne(() => Post)
     @JoinColumn({ name: 'postId' })

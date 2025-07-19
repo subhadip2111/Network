@@ -88,6 +88,9 @@ export class Post {
   @Column({ type: 'int', nullable: true, default: 0 })
   insightfulCount: number;
 
+  @Column({ type: 'int', nullable: true, default: 0 })
+  celebrateCount: number;
+
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
