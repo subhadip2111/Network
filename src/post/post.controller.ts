@@ -71,7 +71,6 @@ export class PostController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get user Feeds ' })
   @Get('/feeds')
-
   async getMyFeeds(@Request() req: any, @Query() query: QueryPostDto) {
     const userInfo = req.user;
     const { feeds,

@@ -19,21 +19,23 @@ export class PostService {
 
 
 
-  async findOne(postId: string) {
-    try {
-      const post = await this.postRepository.findOne({
-        where: { id: postId }
-      });
-      if (!post) {
+async findOne(postId: string) {
+  try {
+    const post = await this.postRepository.findOne({
+      where: { id: postId },
+      relations: ['user'], // Moved `relations` outside `where`
+    });
 
-        throw new NotFoundException(`Post with ID ${postId} not found`);
-      }
-
-      return post;
-    } catch (error) {
-      return null;
+    if (!post) {
+      throw new NotFoundException(`Post with ID ${postId} not found`);
     }
+
+    return post;
+  } catch (error) {
+    throw error;
   }
+}
+
 
 
 
