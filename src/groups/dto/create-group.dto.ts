@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsArray, IsBoolean, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreateGroupDto {
   @ApiProperty({ description: 'group name ' })
@@ -18,4 +18,17 @@ export class CreateGroupDto {
     @IsOptional() 
     @IsString()
     createdBy:string
+
+  @IsOptional()
+  @IsString()
+  image: string;
+
+  
+  @IsOptional()
+  @IsString()
+  description: string;
+ 
+  @IsOptional()
+  @IsBoolean()
+  isPrivate: boolean;
 }

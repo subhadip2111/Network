@@ -33,10 +33,6 @@ export class Post {
   @Column({ type: 'text', default: null })
   resourceType: string
 
-
-
-
-
   @Column({ type: 'text', default: null })
   demoUrl: string
 

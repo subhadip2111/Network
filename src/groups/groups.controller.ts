@@ -36,7 +36,7 @@ export class GroupsController {
     query.userId = req.user.id
     console.log(query)
     const myGroups = await this.groupsService.getAllOfMyGroups(query);
-    return new ApiSuccessResponse(HttpStatus.CREATED, true, 'Group list get  successfully', myGroups)
+    return new ApiSuccessResponse(HttpStatus.OK, true, 'Group list get  successfully', myGroups)
 
   }
 

@@ -37,7 +37,7 @@ export class GroupsService {
     const myGroups = await this.groupRepo
       .createQueryBuilder('group')
       .leftJoinAndSelect('group.members', 'member')
-      .where('member.id = :userId', { userId })
+      .where('group.createdBy = :userId', { userId })
       .getMany();
   
     return myGroups;
